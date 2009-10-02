@@ -1,0 +1,10 @@
+.DS_Store
+*.pyc
+*.cover
+MANIFEST
+build/lib/*
+dist/*
+config
+*.bak
+documentation.rst
+documentation.html
