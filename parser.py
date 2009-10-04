@@ -1,4 +1,5 @@
 import unittest
+from brain import *
 
 def _tokenize(condition):
 	"""
@@ -15,6 +16,11 @@ def _tokenize(condition):
 	READING_UNQUOTED_STRING = 3
 	READING_ESCAPED_CHARACTER = 4
 
+	# symbol groups
+	PARENTHESIS = ['(', ')']
+	OPERATOR_SYMBOLS = ['=', '<', '>', '!', '~']
+	WHITESPACE = [' ', '\t']
+
 	tokens = []
 	state = INTERMEDIATE
 	buffer = ""
@@ -28,13 +34,13 @@ def _tokenize(condition):
 		position += 1
 
 		if state == INTERMEDIATE:
-			if c in ['(', ')', '=', '~']:
+			if c in PARENTHESIS:
 				tokens.append((c, position, position, False))
-			elif c in ['<', '>']:
+			elif c in OPERATOR_SYMBOLS:
 				state = READING_OPERATOR
 				starting_position = position
 				buffer += c
-			elif c == ' ' or c == '\t':
+			elif c in WHITESPACE:
 				continue
 			else:
 				if c == '"':
@@ -45,7 +51,7 @@ def _tokenize(condition):
 					starting_position = position
 					buffer += c
 		elif state == READING_OPERATOR:
-			if c == '=':
+			if c in OPERATOR_SYMBOLS:
 				buffer += c
 			else:
 				characters.append(c)
@@ -63,7 +69,7 @@ def _tokenize(condition):
 			else:
 				buffer += c
 		elif state == READING_UNQUOTED_STRING:
-			if c in [' ', '\t', '=', '<', '>', '~', ')', '(']:
+			if c in WHITESPACE + PARENTHESIS + OPERATOR_SYMBOLS:
 				characters.append(c)
 				position -= 1
 				tokens.append((buffer, starting_position, position, False))
@@ -81,12 +87,19 @@ def _tokenize(condition):
 
 	return tokens
 
+def _tokensToSearchCondition(tokens):
+	pass
+
+def parseSearchCondition(condition):
+	tokens = _tokenize(condition)
+	return _tokensToSearchCondition(tokens)
+
 
 class TokenizerTests(unittest.TestCase):
 
 	def testTransformations(self):
 		tests = {
-			r'elem=1': [('elem', 0, 3, False), ('=', 4, 4, False), ('1', 5, 5, False)],
+			r'elem!=1': [('elem', 0, 3, False), ('!=', 4, 5, False), ('1', 6, 6, False)],
 			r'elem="value"': [('elem', 0, 3, False), ('=', 4, 4, False),
 				('value', 5, 11, True)],
 			r'elem <= "va\"\\lue"': [('elem', 0, 3, False),
