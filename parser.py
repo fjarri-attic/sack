@@ -39,7 +39,7 @@ def _tokenize(condition):
 
 	# symbol groups
 	PARENTHESES = ['(', ')']
-	OPERATOR_SYMBOLS = ['=', '<', '>', '~']
+	OPERATOR_SYMBOLS = ['=', '<', '>', '~', '!']
 	WHITESPACE = [' ', '\t']
 
 	tokens = []
@@ -110,7 +110,8 @@ def _tokenize(condition):
 	if len(buffer) > 0:
 		if state == READING_QUOTED_STRING or \
 				state == READING_ESCAPED_CHARACTER:
-			token_type = _Token.QUOTED
+			raise ParserError("Quoted string finished unexpectedly",
+				starting_position, position)
 		else:
 			token_type = _Token.SIMPLE
 
@@ -175,6 +176,7 @@ def _tokensToSearchCondition(tokens, position=0):
 
 	COMPARISONS = {'==': op.EQ, '>': op.GT, '<': op.LT,
 		'~': op.REGEXP, '<=': op.LTE, '>=': op.GTE}
+	INVERSED_COMPARISONS = {'!=': op.EQ, '!~': op.REGEXP}
 	OPERATORS = {'and': op.AND, 'or': op.OR, 'not': op.NOT}
 
 	i = position
@@ -202,9 +204,19 @@ def _tokensToSearchCondition(tokens, position=0):
 			i += 1
 			state = COMPARISON
 		elif state == COMPARISON:
-			if tokens[i].type != _Token.SIMPLE or tokens[i].value.lower() not in COMPARISONS:
+			if tokens[i].type != _Token.SIMPLE or (tokens[i].value not in COMPARISONS and \
+					tokens[i].value not in INVERSED_COMPARISONS):
 				raise ParserError("Wrong operator", tokens[i].start, tokens[i].end)
-			result.append(COMPARISONS[tokens[i].value.lower()])
+
+			if tokens[i].value in COMPARISONS:
+				result.append(COMPARISONS[tokens[i].value])
+			else:
+				if len(result) > 1 and result[-2] == op.NOT:
+					del result[-2]
+				else:
+					result.insert(-2, op.NOT)
+
+				result.append(INVERSED_COMPARISONS[tokens[i].value])
 			i += 1
 			state = VALUE
 		elif state == VALUE:
@@ -276,8 +288,14 @@ class ParserTests(unittest.TestCase):
 				_Token(')', 35, 35, _Token.CLOSING_PARENTHESIS)]
 		}
 
-		for s in tests:
-			self.assertEqual(tests[s], _tokenize(s))
+		for test in tests:
+			self.assertEqual(tests[test], _tokenize(test))
+
+	def testTokenizerErrors(self):
+		tests = [r'elem=="aaa', r'elem=="aaa\\']
+
+		for test in tests:
+			self.assertRaises(ParserError, _tokenize, test)
 
 	def testValidNames(self):
 		tests = {'name': ['name'],
@@ -293,7 +311,7 @@ class ParserTests(unittest.TestCase):
 			self.assertEqual(_getFieldNameList(test), tests[test])
 
 	def testInvalidNames(self):
-		tests = ['1name', 'name.2name', '#name', 'name$name']
+		tests = ['1name', 'name.2name', '#name', 'name$name', 'name.-name']
 
 		for test in tests:
 			self.assertEqual(_getFieldNameList(test), None)
@@ -312,7 +330,8 @@ class ParserTests(unittest.TestCase):
 	def testValueTypeDeduction(self):
 		tests = {
 		    "1": 1, "-2": -2, "3.0": 3.0, "-5.678": -5.678,
-		    "0xFAfb": b"\xfa\xfb", "123a": "123a"
+		    "0xFAfb": b"\xfa\xfb", "123a": "123a",
+		    "NULL": None, "null": None
 		}
 
 		for test in tests:
@@ -335,7 +354,11 @@ class ParserTests(unittest.TestCase):
 				['elem2'], op.REGEXP, "zzz"],
 			r'not (elem.abc.def == 0xabcd) and (elem2 < 3)':
 				[op.NOT, [['elem', 'abc', 'def'], op.EQ, b"\xab\xcd"],
-				op.AND, [['elem2'], op.LT, 3]]
+				op.AND, [['elem2'], op.LT, 3]],
+			r'not (elem.2 != 4) or (not key.2.3 != 1) and not key.1 !~ "abc"':
+				[op.NOT, [op.NOT, ['elem', 2], op.EQ, 4], op.OR,
+				[['key', 2, 3], op.EQ, 1], op.AND,
+				['key', 1], op.REGEXP, 'abc']
 		}
 
 		for test in tests:
