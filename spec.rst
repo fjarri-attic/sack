@@ -214,7 +214,7 @@ Key names have separate styles.
 Right click on a title shows context menu ("Copy title", "Copy as", "Create key").
 
 Right click on key name (or on plus/minus sign) shows context menu: "Copy as" (submenu with list of
-possible exporters), "Delete", "Collapse/Unfold". Additionally, for a key: "Add new key",
+possible exporters + copy full key name), "Delete", "Collapse/Unfold". Additionally, for a key: "Add new key",
 for a list: "Insert new element to the beginning", "Insert new element to the end". For a plus/minus
 sign pointing to the element of the list: "Insert new element before", "Insert new element after".
 New elements/keys are created with the value of NULL. Left click on plus/minus sign unfolds/collapses
