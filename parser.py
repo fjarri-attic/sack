@@ -118,25 +118,31 @@ def _tokenize(condition):
 
 	return tokens
 
-def _isFieldNameValid(name):
+def _getFieldNameList(name):
 	"""Check if string is a valid field name"""
 
 	# check symbol set
 	if not re.search(r"^[\w\d_\-\.]+$", name):
-		return False
+		return None
 
 	elements = name.split('.')
 
+	name_list = []
 	for element in elements:
 
 		if len(element) == 0:
-			return False
+			name_list.append(None)
+		elif element[0].isdigit():
+			try:
+				name_list.append(int(element))
+			except ValueError:
+				return None
+		elif element[0].isalpha() or element[0] == '_':
+			name_list.append(element)
+		else:
+			return None
 
-		# first symbol must be a letter or an underscore
-		if not element[0].isalpha() and element[0] != '_':
-			return False
-
-	return True
+	return name_list
 
 def _deduceValueType(value):
 	if value.lower() == 'null':
@@ -162,14 +168,14 @@ def _tokensToSearchCondition(tokens, position=0):
 	# states
 	CONDITION_START = 0
 	FIELD_NAME = 1
-	OPERATOR = 2
+	COMPARISON = 2
 	VALUE = 3
 
 	state = CONDITION_START
 
-	OPERATORS = {'==': op.EQ, '>': op.GT, '<': op.LT,
-		'~': op.REGEXP, '<=': op.LTE, '>=': op.GTE,
-		'and': op.AND, 'or': op.OR, 'not': op.NOT}
+	COMPARISONS = {'==': op.EQ, '>': op.GT, '<': op.LT,
+		'~': op.REGEXP, '<=': op.LTE, '>=': op.GTE}
+	OPERATORS = {'and': op.AND, 'or': op.OR, 'not': op.NOT}
 
 	i = position
 	while i < len(tokens):
@@ -180,20 +186,25 @@ def _tokensToSearchCondition(tokens, position=0):
 		elif tokens[i].type == _Token.CLOSING_PARENTHESIS:
 			return i + 1, result
 		elif state == CONDITION_START:
-			if tokens[i].type == _Token.SIMPLE and tokens[i].value.lower() == 'not':
-				result.append(op.NOT)
-				i += 1
-			state = FIELD_NAME
+			if tokens[i].type == _Token.SIMPLE and tokens[i].value.lower() in OPERATORS:
+				if i < len(tokens) - 1 and tokens[i + 1].value not in COMPARISONS:
+					result.append(OPERATORS[tokens[i].value.lower()])
+					i += 1
+				else:
+					state = FIELD_NAME
+			else:
+				state = FIELD_NAME
 		elif state == FIELD_NAME:
-			if tokens[i].type != _Token.SIMPLE or not _isFieldNameValid(tokens[i].value):
+			name_list = _getFieldNameList(tokens[i].value)
+			if tokens[i].type != _Token.SIMPLE or name_list is None:
 				raise ParserError("Wrong field name", tokens[i].start, tokens[i].end)
-			result.append(tokens[i].value.split('.'))
+			result.append(name_list)
 			i += 1
-			state = OPERATOR
-		elif state == OPERATOR:
-			if tokens[i].type != _Token.SIMPLE or tokens[i].value.lower() not in OPERATORS:
+			state = COMPARISON
+		elif state == COMPARISON:
+			if tokens[i].type != _Token.SIMPLE or tokens[i].value.lower() not in COMPARISONS:
 				raise ParserError("Wrong operator", tokens[i].start, tokens[i].end)
-			result.append(OPERATORS[tokens[i].value.lower()])
+			result.append(COMPARISONS[tokens[i].value.lower()])
 			i += 1
 			state = VALUE
 		elif state == VALUE:
@@ -269,16 +280,23 @@ class ParserTests(unittest.TestCase):
 			self.assertEqual(tests[s], _tokenize(s))
 
 	def testValidNames(self):
-		tests = ['name', 'name1', 'name_.a1_name', '_n.am.e', '_-_']
+		tests = {'name': ['name'],
+			'name1': ['name1'],
+			'name_.a1_name': ['name_', 'a1_name'],
+			'_n.am.e': ['_n', 'am', 'e'],
+			'_-_': ['_-_'],
+			'name.2.name2': ['name', 2, 'name2'],
+			'name..name': ['name', None, 'name'],
+			'...': [None, None, None, None]}
 
 		for test in tests:
-			self.assertEqual(_isFieldNameValid(test), True)
+			self.assertEqual(_getFieldNameList(test), tests[test])
 
 	def testInvalidNames(self):
-		tests = ['1name', 'name..name', '.name', 'name.1name','name$name']
+		tests = ['1name', 'name.2name', '#name', 'name$name']
 
 		for test in tests:
-			self.assertEqual(_isFieldNameValid(test), False)
+			self.assertEqual(_getFieldNameList(test), None)
 
 	def testWrongParentheses(self):
 		opening = _Token(type=_Token.OPENING_PARENTHESIS)
@@ -306,8 +324,18 @@ class ParserTests(unittest.TestCase):
 			self.assertRaises(ValueError, _deduceValueType, test)
 
 	def testConditionBuilder(self):
+		"""Not exactly a unit test, but when it looks like this it is way easier to debug"""
 		tests = {
-			r'elem==1': [['elem'], op.EQ, 1]
+			r'elem==1': [['elem'], op.EQ, 1],
+			r'(elem==2)': [[['elem'], op.EQ, 2]],
+			r'elem > 1 and elem2 < 5.54':
+				[['elem'], op.GT, 1, op.AND, ['elem2'], op.LT, 5.54],
+			r'not elem <= "aaa" and not elem2 ~ "zzz"':
+				[op.NOT, ['elem'], op.LTE, "aaa", op.AND, op.NOT,
+				['elem2'], op.REGEXP, "zzz"],
+			r'not (elem.abc.def == 0xabcd) and (elem2 < 3)':
+				[op.NOT, [['elem', 'abc', 'def'], op.EQ, b"\xab\xcd"],
+				op.AND, [['elem2'], op.LT, 3]]
 		}
 
 		for test in tests:
