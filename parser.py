@@ -329,9 +329,9 @@ class ParserTests(unittest.TestCase):
 
 	def testValueTypeDeduction(self):
 		tests = {
-		    "1": 1, "-2": -2, "3.0": 3.0, "-5.678": -5.678,
-		    "0xFAfb": b"\xfa\xfb", "123a": "123a",
-		    "NULL": None, "null": None
+			"1": 1, "-2": -2, "3.0": 3.0, "-5.678": -5.678,
+			"0xFAfb": b"\xfa\xfb", "123a": "123a",
+			"NULL": None, "null": None
 		}
 
 		for test in tests:
@@ -358,11 +358,19 @@ class ParserTests(unittest.TestCase):
 			r'not (elem.2 != 4) or (not key.2.3 != 1) and not key.1 !~ "abc"':
 				[op.NOT, [op.NOT, ['elem', 2], op.EQ, 4], op.OR,
 				[['key', 2, 3], op.EQ, 1], op.AND,
-				['key', 1], op.REGEXP, 'abc']
+				['key', 1], op.REGEXP, 'abc'],
+			r'and == 2': [['and'], op.EQ, 2],
+			r'': None
 		}
 
 		for test in tests:
 			self.assertEqual(tests[test], parseSearchCondition(test))
+
+	def testConditionBuilderErrors(self):
+		tests = [r'2elem==1', r'elem=<3', r'elem == 0xXY']
+
+		for test in tests:
+			self.assertRaises(ParserError, parseSearchCondition, test)
 
 
 def suite():
