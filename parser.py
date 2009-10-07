@@ -6,7 +6,9 @@ import brain.op as op
 from errors import *
 
 class _Token:
+	"""Search condition token"""
 
+	# token types
 	SIMPLE = 0
 	QUOTED = 1
 	OPENING_PARENTHESIS = 2
@@ -23,12 +25,7 @@ class _Token:
 			self.end == other.end and self.type == other.type
 
 def _tokenize(condition):
-	"""
-	Transform a string with condition to a list of tokens:
-	(string, starting position, ending position, quoted)
-	'quoted' is a boolean parameter, equal to True if the source of the token
-	was a quoted string.
-	"""
+	"""Transform a string with condition to a list of _Token objects"""
 
 	# states
 	INTERMEDIATE = 0
@@ -77,6 +74,7 @@ def _tokenize(condition):
 			if c in OPERATOR_SYMBOLS:
 				buffer += c
 			else:
+				# symbol does not belong to operator, return it back to pool
 				characters.append(c)
 				position -= 1
 			tokens.append(_Token(buffer, starting_position,
@@ -95,6 +93,7 @@ def _tokenize(condition):
 				buffer += c
 		elif state == READING_UNQUOTED_STRING:
 			if c in WHITESPACE + PARENTHESES + OPERATOR_SYMBOLS:
+				# string ended, return this symbol back to pool
 				characters.append(c)
 				position -= 1
 				tokens.append(_Token(buffer, starting_position,
@@ -107,6 +106,7 @@ def _tokenize(condition):
 			buffer += c
 			state = READING_QUOTED_STRING
 
+	# collect the last part of condition
 	if len(buffer) > 0:
 		if state == READING_QUOTED_STRING or \
 				state == READING_ESCAPED_CHARACTER:
@@ -120,7 +120,10 @@ def _tokenize(condition):
 	return tokens
 
 def _getFieldNameList(name):
-	"""Check if string is a valid field name"""
+	"""
+	Check field name validity and return name list if the name is valid,
+	None otherwise.
+	"""
 
 	# check symbol set
 	if not re.search(r"^[\w\d_\-\.]+$", name):
@@ -146,6 +149,11 @@ def _getFieldNameList(name):
 	return name_list
 
 def _deduceValueType(value):
+	"""
+	Try to deduce value type from value token string. Return this value on success
+	or raise ValueError on error.
+	"""
+
 	if value.lower() == 'null':
 		return None
 
@@ -164,6 +172,11 @@ def _deduceValueType(value):
 	return result
 
 def _tokensToSearchCondition(tokens, position=0):
+	"""
+	Transform list of tokens to nested lists of conditions for brain.search()
+	The function is recursive, but the same token list is used throughout function calls.
+	"""
+
 	result = []
 
 	# states
@@ -188,15 +201,18 @@ def _tokensToSearchCondition(tokens, position=0):
 		elif tokens[i].type == _Token.CLOSING_PARENTHESIS:
 			return i + 1, result
 		elif state == CONDITION_START:
-			if tokens[i].type == _Token.SIMPLE and tokens[i].value.lower() in OPERATORS:
-				if i < len(tokens) - 1 and tokens[i + 1].value not in COMPARISONS:
+		# intermediate state; there can be either operator or field name here
+		# if token looks like operator and the next token is not a comparison -
+		# we consider this token to be an operator, otherwise it is a field name
+			if tokens[i].type == _Token.SIMPLE and tokens[i].value.lower() in OPERATORS and \
+				i < len(tokens) - 1 and tokens[i + 1].value not in COMPARISONS:
 					result.append(OPERATORS[tokens[i].value.lower()])
 					i += 1
-				else:
-					state = FIELD_NAME
 			else:
 				state = FIELD_NAME
 		elif state == FIELD_NAME:
+		# field name should be valid and token type should be simple
+		# (no quoted value names)
 			name_list = _getFieldNameList(tokens[i].value)
 			if tokens[i].type != _Token.SIMPLE or name_list is None:
 				raise ParserError("Wrong field name", tokens[i].start, tokens[i].end)
@@ -204,13 +220,16 @@ def _tokensToSearchCondition(tokens, position=0):
 			i += 1
 			state = COMPARISON
 		elif state == COMPARISON:
+			# no quoted comparisons
 			if tokens[i].type != _Token.SIMPLE or (tokens[i].value not in COMPARISONS and \
 					tokens[i].value not in INVERSED_COMPARISONS):
-				raise ParserError("Wrong operator", tokens[i].start, tokens[i].end)
+				raise ParserError("Wrong comparison operator", tokens[i].start, tokens[i].end)
 
 			if tokens[i].value in COMPARISONS:
 				result.append(COMPARISONS[tokens[i].value])
 			else:
+			# when processing inversed operator, we replace it by non-inverted one
+			# and invert op.NOT before the condition
 				if len(result) > 1 and result[-2] == op.NOT:
 					del result[-2]
 				else:
@@ -222,6 +241,8 @@ def _tokensToSearchCondition(tokens, position=0):
 		elif state == VALUE:
 			value = tokens[i].value
 
+			# if the token is simple, value type should be deduced
+			# if not, it is definitely a string
 			if tokens[i].type == _Token.SIMPLE:
 				try:
 					value = _deduceValueType(value)
@@ -236,6 +257,11 @@ def _tokensToSearchCondition(tokens, position=0):
 	return result, i
 
 def _checkParentheses(tokens):
+	"""
+	Check token list for non-matching parenthesis (this will simplify
+	further transformation to search condition)
+	"""
+
 	parentheses_counter = 0
 	for token in tokens:
 		if token.type == _Token.OPENING_PARENTHESIS:
@@ -250,6 +276,8 @@ def _checkParentheses(tokens):
 		raise ParserError("Missing closing parenthesis", tokens[-1].start, tokens[-1].end)
 
 def parseSearchCondition(condition):
+	"""Transform string to search condition"""
+
 	tokens = _tokenize(condition)
 
 	if len(tokens) == 0:
@@ -367,6 +395,7 @@ class ParserTests(unittest.TestCase):
 			self.assertEqual(tests[test], parseSearchCondition(test))
 
 	def testConditionBuilderErrors(self):
+		"""Not exactly a unit test, but when it looks like this it is way easier to debug"""
 		tests = [r'2elem==1', r'elem=<3', r'elem == 0xXY']
 
 		for test in tests:
