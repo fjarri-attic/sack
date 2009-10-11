@@ -37,7 +37,8 @@ class MainMenu(QtGui.QMenuBar):
 		tools = self.addMenu('&Tools')
 
 	def showFileNewDialog(self):
-		filename = QtGui.QFileDialog.getSaveFileName(self, 'New Sack', '~')
+		filename = QtGui.QFileDialog.getSaveFileName(self, 'New Sack', '~',
+			"Sack databases (*.sack);;All files (*.*)")
 		if filename is not None:
 			db_window = DBWindow(filename, True)
 			self._app.registerDBWindow(db_window)
