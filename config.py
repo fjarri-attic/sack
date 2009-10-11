@@ -16,7 +16,8 @@ class _SectionWrapper:
 		self._section_name = section_name
 
 	def __getattr__(self, name):
-		return self._config_obj.get(self._section_name, name)
+		result = self._config_obj.get(self._section_name, name)
+		return eval(result)
 
 _config_obj = RawConfigParser()
 config = _ConfigWrapper(_config_obj)
