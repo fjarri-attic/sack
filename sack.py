@@ -10,9 +10,10 @@ class Application(QtGui.QApplication):
 
 	def __init__(self):
 		QtGui.QApplication.__init__(self, sys.argv)
-		self._main_menu = MainMenu(self)
-		config.read()
 
+		config.init()
+
+		self._main_menu = MainMenu(self)
 		self._db_windows = []
 
 	def registerDBWindow(self, window):
@@ -24,21 +25,21 @@ class MainMenu(QtGui.QMenuBar):
 		QtGui.QMenuBar.__init__(self)
 		self._app = app
 
-		file = self.addMenu('&File')
+		file = self.addMenu(config.lang.menu.file)
 
-		file_new = QtGui.QAction('New Sack', self)
+		file_new = QtGui.QAction(config.lang.menu.file_new, self)
 		file_new.setShortcut(QtCore.Qt.CTRL + QtCore.Qt.Key_N)
-		file_new.setStatusTip('Create and open new Sack')
 		file.addAction(file_new)
 		self.connect(file_new, QtCore.SIGNAL('triggered()'), self.showFileNewDialog)
 
-		edit = self.addMenu('&Edit')
-		view = self.addMenu('&View')
-		tools = self.addMenu('&Tools')
+		edit = self.addMenu(config.lang.menu.edit)
+		view = self.addMenu(config.lang.menu.view)
+		tools = self.addMenu(config.lang.menu.tools)
 
 	def showFileNewDialog(self):
 		filename = QtGui.QFileDialog.getSaveFileName(self, 'New Sack', '~',
-			"Sack databases (*.sack);;All files (*.*)")
+			config.lang.menu.file_masks_sack + " (*.sack);;" +
+			config.lang.menu.file_masks_all + " (*.*)")
 		if filename is not None:
 			db_window = DBWindow(filename, True)
 			self._app.registerDBWindow(db_window)

@@ -2,7 +2,7 @@ from PyQt4 import QtGui, QtCore
 
 import brain
 
-from config import config
+import config
 
 class DBWindow(QtGui.QMainWindow):
 	def __init__(self, file_name, create_new):
@@ -23,7 +23,8 @@ class DBWindow(QtGui.QMainWindow):
 		self.addDockWidget(QtCore.Qt.LeftDockWidgetArea, tags_dock)
 		self.addDockWidget(QtCore.Qt.RightDockWidgetArea, shelf_dock)
 
-		self.resize(config.geometry.db_window_width, config.geometry.db_window_height)
+		self.resize(int(config.options.geometry.db_window_width),
+			int(config.options.geometry.db_window_height))
 
 		self.statusBar().showMessage('Ready')
 		self.show()
