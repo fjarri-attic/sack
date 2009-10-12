@@ -6,7 +6,10 @@ import brain
 from dbwindow import DBWindow
 import config
 
+
 class Application(QtGui.QApplication):
+
+	create_db_window = QtCore.pyqtSignal(str, bool)
 
 	def __init__(self):
 		QtGui.QApplication.__init__(self, sys.argv)
@@ -16,33 +19,60 @@ class Application(QtGui.QApplication):
 		self._main_menu = MainMenu(self)
 		self._db_windows = []
 
-	def registerDBWindow(self, window):
-		self._db_windows.append(window)
+		self.create_db_window.connect(self.createDBWindow)
+
+		self.setQuitOnLastWindowClosed(False)
+
+	def createDBWindow(self, filename, new_file):
+		db_window = DBWindow(self, filename, new_file)
+		self._db_windows.append(db_window)
+		db_window.show()
+
+		# Mac OS specific - required in addition to show()
+		db_window.raise_()
+
 
 class MainMenu(QtGui.QMenuBar):
 
 	def __init__(self, app):
 		QtGui.QMenuBar.__init__(self)
+
 		self._app = app
+		self._file_formats = config.lang.menu.file_masks_sack + " (*.sack);;" + \
+			config.lang.menu.file_masks_all + " (*.*)"
+		self._default_dir = '~'
 
 		file = self.addMenu(config.lang.menu.file)
 
 		file_new = QtGui.QAction(config.lang.menu.file_new, self)
 		file_new.setShortcut(QtCore.Qt.CTRL + QtCore.Qt.Key_N)
+		file_new.triggered.connect(self._showFileNewDialog)
 		file.addAction(file_new)
-		self.connect(file_new, QtCore.SIGNAL('triggered()'), self.showFileNewDialog)
+
+		file_open = QtGui.QAction(config.lang.menu.file_open, self)
+		file_open.setShortcut(QtCore.Qt.CTRL + QtCore.Qt.Key_O)
+		file_open.triggered.connect(self._showFileOpenDialog)
+		file.addAction(file_open)
 
 		edit = self.addMenu(config.lang.menu.edit)
 		view = self.addMenu(config.lang.menu.view)
 		tools = self.addMenu(config.lang.menu.tools)
 
-	def showFileNewDialog(self):
-		filename = QtGui.QFileDialog.getSaveFileName(self, 'New Sack', '~',
-			config.lang.menu.file_masks_sack + " (*.sack);;" +
-			config.lang.menu.file_masks_all + " (*.*)")
+	def _showFileNewDialog(self):
+		self._showFileDialog(QtGui.QFileDialog.getSaveFileName,
+			config.lang.menu.file_new, True)
+
+	def _showFileOpenDialog(self):
+		self._showFileDialog(QtGui.QFileDialog.getOpenFileName,
+			config.lang.menu.file_open, False)
+
+	def _showFileDialog(self, func, title, new_file):
+		filename = func(self, title,
+			self._default_dir, self._file_formats)
 		if filename is not None:
-			db_window = DBWindow(filename, True)
-			self._app.registerDBWindow(db_window)
+			self._app.create_db_window.emit(filename, new_file)
+
 
 app = Application()
-sys.exit(app.exec_())
+exitcode = app.exec_()
+sys.exit(exitcode)

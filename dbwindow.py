@@ -5,12 +5,13 @@ import brain
 import config
 
 class DBWindow(QtGui.QMainWindow):
-	def __init__(self, file_name, create_new):
+	def __init__(self, app_obj, file_name, new_file):
 		QtGui.QMainWindow.__init__(self)
 
+		self._app_obj = app_obj
 		self.setWindowTitle(file_name)
 		self._connection = brain.connect(None, file_name,
-			open_existing=(0 if create_new else 1))
+			open_existing=(0 if new_file else 1))
 
 		tabbar = QtGui.QTabWidget()
 		tabbar.addTab(QtGui.QWidget(), 'first')
@@ -27,4 +28,3 @@ class DBWindow(QtGui.QMainWindow):
 			int(config.options.geometry.db_window_height))
 
 		self.statusBar().showMessage('Ready')
-		self.show()
