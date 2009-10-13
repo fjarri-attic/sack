@@ -5,6 +5,7 @@ import brain
 
 from dbwindow import DBWindow
 import config
+import hotkeys
 
 
 class Application(QtGui.QApplication):
@@ -45,12 +46,12 @@ class MainMenu(QtGui.QMenuBar):
 		file = self.addMenu(config.lang.menu.file)
 
 		file_new = QtGui.QAction(config.lang.menu.file_new, self)
-		file_new.setShortcut(QtCore.Qt.CTRL + QtCore.Qt.Key_N)
+		file_new.setShortcut(hotkeys.NEW)
 		file_new.triggered.connect(self._showFileNewDialog)
 		file.addAction(file_new)
 
 		file_open = QtGui.QAction(config.lang.menu.file_open, self)
-		file_open.setShortcut(QtCore.Qt.CTRL + QtCore.Qt.Key_O)
+		file_open.setShortcut(hotkeys.OPEN)
 		file_open.triggered.connect(self._showFileOpenDialog)
 		file.addAction(file_open)
 
