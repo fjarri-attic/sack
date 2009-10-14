@@ -13,6 +13,7 @@ class MainMenu(QtGui.QMenuBar):
 		self._file_formats = app.translate("MainMenu", "Sack databases") + " (*.sack);;" + \
 			app.translate("MainMenu", "All files") + " (*.*)"
 		self._default_dir = '~'
+		self._preferences_window = None
 
 		file = self.addMenu(app.translate("MainMenu", "&File"))
 
@@ -26,6 +27,10 @@ class MainMenu(QtGui.QMenuBar):
 		file_open.triggered.connect(self._showFileOpenDialog)
 		file.addAction(file_open)
 
+		preferences = QtGui.QAction(app.translate("MainMenu", "&Preferences"), self)
+		preferences.triggered.connect(self._showPreferences)
+		file.addAction(preferences)
+
 	def _showFileNewDialog(self):
 		self._showFileDialog(QtGui.QFileDialog.getSaveFileName,
 			app.translate("MainMenu", "New Sack"), True)
@@ -38,4 +43,7 @@ class MainMenu(QtGui.QMenuBar):
 		filename = func(self, title,
 			self._default_dir, self._file_formats)
 		if filename is not None:
-			app.inst.create_db_window.emit(filename, new_file)
+			app.inst.createDBWindow.emit(filename, new_file)
+
+	def _showPreferences(self):
+		app.inst.showPreferencesWindow.emit()

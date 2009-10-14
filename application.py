@@ -6,6 +6,7 @@ from PyQt4 import QtGui, QtCore
 from appglobals import *
 import dbwindow
 import mainmenu
+import preferences
 import sack_qrc
 
 
@@ -22,8 +23,6 @@ _DEFAULT_SETTINGS = {
 
 class Application(QtGui.QApplication):
 
-	create_db_window = QtCore.pyqtSignal(str, bool)
-
 	def __init__(self, argv):
 		QtGui.QApplication.__init__(self, argv)
 		self.setApplicationName("Sack")
@@ -36,8 +35,11 @@ class Application(QtGui.QApplication):
 		self._main_menu = mainmenu.MainMenu()
 
 		self._db_windows = []
+		self._preferences_window = None
 
-		self.create_db_window.connect(self._createDBWindow)
+		self.createDBWindow.connect(self._createDBWindow)
+		self.showPreferencesWindow.connect(self._showPreferencesWindow)
+		self.closePreferencesWindow.connect(self._closePreferencesWindow)
 
 		self.setQuitOnLastWindowClosed(False)
 
@@ -52,13 +54,27 @@ class Application(QtGui.QApplication):
 			translator.load(file_name)
 			self.installTranslator(translator)
 
-	def _createDBWindow(self, filename, new_file):
-		db_window = dbwindow.DBWindow(filename, new_file)
-		self._db_windows.append(db_window)
-		db_window.show()
+	createDBWindow = QtCore.pyqtSignal(str, bool)
 
-		# Mac OS specific - required in addition to show()
-		db_window.raise_()
+	def _createDBWindow(self, filename, new_file):
+		wnd = dbwindow.DBWindow(filename, new_file)
+		self._db_windows.append(wnd)
+		wnd.show()
+
+	showPreferencesWindow = QtCore.pyqtSignal()
+
+	def _showPreferencesWindow(self):
+		if self._preferences_window is None:
+			self._preferences_window = preferences.Preferences()
+
+		self._preferences_window.show()
+		self._preferences_window.raise_()
+		self._preferences_window.activateWindow()
+
+	closePreferencesWindow = QtCore.pyqtSignal()
+
+	def _closePreferencesWindow(self):
+		self._preferences_window = None
 
 	def _fillSettings(self, data):
 
