@@ -1,5 +1,10 @@
-SOURCES = sack.py \
-	dbwindow.py
+SOURCES = \
+	appglobals.py \
+	application.py \
+	dbwindow.py \
+	hotkeys.py \
+	mainmenu.py \
+	sack.py \
 
 RESOURCES = sack.qrc
 

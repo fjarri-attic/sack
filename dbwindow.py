@@ -2,13 +2,13 @@ from PyQt4 import QtGui, QtCore
 
 import brain
 
-import config
+from appglobals import *
+
 
 class DBWindow(QtGui.QMainWindow):
-	def __init__(self, app_obj, file_name, new_file):
+	def __init__(self, file_name, new_file):
 		QtGui.QMainWindow.__init__(self)
 
-		self._app_obj = app_obj
 		self.setWindowTitle(file_name)
 		self._connection = brain.connect(None, file_name,
 			open_existing=(0 if new_file else 1))
@@ -24,7 +24,7 @@ class DBWindow(QtGui.QMainWindow):
 		self.addDockWidget(QtCore.Qt.LeftDockWidgetArea, tags_dock)
 		self.addDockWidget(QtCore.Qt.RightDockWidgetArea, shelf_dock)
 
-		self.resize(int(config.options.geometry.db_window_width),
-			int(config.options.geometry.db_window_height))
+		self.resize(app.settings.value('dbwindow/width'),
+			app.settings.value('dbwindow/height'))
 
 		self.statusBar().showMessage('Ready')
