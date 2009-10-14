@@ -9,6 +9,17 @@ import mainmenu
 import sack_qrc
 
 
+_DEFAULT_SETTINGS = {
+	'ui': {
+		'language': 'en' # user interface language
+	},
+	'dbwindow': {
+		'width': 600, # starting width of DB window
+		'height': 350 # starting height of DB window
+	}
+}
+
+
 class Application(QtGui.QApplication):
 
 	create_db_window = QtCore.pyqtSignal(str, bool)
@@ -18,7 +29,7 @@ class Application(QtGui.QApplication):
 		self.setApplicationName("Sack")
 		self.setOrganizationName("Manti")
 
-		self._fillDefaultSettings()
+		self._fillSettings(_DEFAULT_SETTINGS)
 
 		self.reloadTranslator()
 
@@ -49,27 +60,17 @@ class Application(QtGui.QApplication):
 		# Mac OS specific - required in addition to show()
 		db_window.raise_()
 
-	def _fillDefaultSettings(self):
+	def _fillSettings(self, data):
 
-		defaults = {
-			'ui': {
-				'language': 'en'
-			},
-			'dbwindow': {
-				'width': 600,
-				'height': 350
-			}
-		}
-
-		def fill(settings, data):
-			for key in data:
-				if isinstance(data[key], dict):
+		def fill(settings, dict_obj):
+			for key in dict_obj:
+				if isinstance(dict_obj[key], dict):
 					settings.beginGroup(key)
-					fill(settings, data[key])
+					fill(settings, dict_obj[key])
 					settings.endGroup()
 				else:
 					if not settings.contains(key):
-						settings.setValue(key, data[key])
+						settings.setValue(key, dict_obj[key])
 
 		settings = QtCore.QSettings()
-		fill(settings, defaults)
+		fill(settings, data)
