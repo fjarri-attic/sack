@@ -2,7 +2,6 @@ from PyQt4 import QtGui
 
 from appglobals import *
 import hotkeys
-import sack_qrc
 
 
 class MainMenu(QtGui.QMenuBar):
@@ -10,6 +9,9 @@ class MainMenu(QtGui.QMenuBar):
 	def __init__(self):
 		QtGui.QMenuBar.__init__(self)
 
+		print(app.inst)
+		app.inst.reloadTranslator.emit()
+		print(app.inst.translate("Language", "Short Name"))
 		self._file_formats = app.translate("MainMenu", "Sack databases") + " (*.sack);;" + \
 			app.translate("MainMenu", "All files") + " (*.*)"
 		self._default_dir = '~'

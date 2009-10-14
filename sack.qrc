@@ -1,5 +1,6 @@
 <!DOCTYPE RCC><RCC version="1.0">
 <qresource>
-	<file>translations/sack_en.qm</file>
+	<file>translations/sack.en_us.qm</file>
+	<file>translations/sack.ru_ru.qm</file>
 </qresource>
 </RCC>

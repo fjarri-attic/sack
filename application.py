@@ -7,12 +7,11 @@ from appglobals import *
 import dbwindow
 import mainmenu
 import preferences
-import sack_qrc
 
 
 _DEFAULT_SETTINGS = {
 	'ui': {
-		'language': 'en' # user interface language
+		'language': 'en_US' # user interface language
 	},
 	'dbwindow': {
 		'width': 600, # starting width of DB window
@@ -30,7 +29,7 @@ class Application(QtGui.QApplication):
 
 		self._fillSettings(_DEFAULT_SETTINGS)
 
-		self.reloadTranslator()
+		self._reloadTranslator()
 
 		self._main_menu = mainmenu.MainMenu()
 
@@ -40,19 +39,31 @@ class Application(QtGui.QApplication):
 		self.createDBWindow.connect(self._createDBWindow)
 		self.showPreferencesWindow.connect(self._showPreferencesWindow)
 		self.closePreferencesWindow.connect(self._closePreferencesWindow)
+		self.reloadTranslator.connect(self._reloadTranslator)
 
 		self.setQuitOnLastWindowClosed(False)
 
+	reloadTranslator = QtCore.pyqtSignal()
 
-	def reloadTranslator(self):
+	def _reloadTranslator(self):
 
-		file_name = ':/translations/sack_' + app.settings.value("ui/language") + '.qm'
-		translation_file = QtCore.QFile(file_name)
+		lang_from_config = app.settings.value("ui/language")
 
-		if translation_file.exists():
-			translator = QtCore.QTranslator()
-			translator.load(file_name)
-			self.installTranslator(translator)
+		translations_dir = QtCore.QDir(':/translations')
+		file_names = translations_dir.entryList(['sack.*.qm'],
+			QtCore.QDir.Files, QtCore.QDir.Name)
+		print("reloadTranslator")
+		translator = QtCore.QTranslator()
+		for file_name in file_names:
+			# TODO: check that translator was successfully loaded
+			translator.load(translations_dir.filePath(file_name))
+			short_name = translator.translate('Language', 'Short Name')
+			if short_name == lang_from_config:
+				print(short_name)
+				self.installTranslator(translator)
+				return
+
+		# TODO: raise an error here
 
 	createDBWindow = QtCore.pyqtSignal(str, bool)
 

@@ -4,8 +4,11 @@ SOURCES = \
 	dbwindow.py \
 	hotkeys.py \
 	mainmenu.py \
-	sack.py \
+	preferences.py \
+	sack.py
 
 RESOURCES = sack.qrc
 
-TRANSLATIONS = translations/sack_en.ts
+TRANSLATIONS = \
+	translations/sack.en_us.ts \
+	translations/sack.ru_ru.ts
