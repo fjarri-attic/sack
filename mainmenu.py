@@ -4,17 +4,52 @@ from appglobals import *
 import hotkeys
 
 
+class DynamicTranslator:
+
+	class Changer:
+		def __init__(self, changer):
+			self._changer = changer
+			self._context = None
+			self._text = None
+
+		def translate(self, context, text):
+			self._context = context
+			self._text = text
+			self.refresh()
+
+		def refresh(self):
+			if self._text is not None:
+				self._changer(app.translate(self._context, self._text))
+			else:
+				self._changer()
+
+	def __init__(self):
+		self._changers = []
+
+	def add(self, changer):
+		c = self.Changer(changer)
+		self._changers.append(c)
+		return c
+
+	def refresh(self):
+		for changer in self._changers:
+			changer.refresh()
+
+
 class MainMenu(QtGui.QMenuBar):
 
 	def __init__(self):
 		QtGui.QMenuBar.__init__(self)
 
-		self._file_formats = app.translate("MainMenu", "Sack databases") + " (*.sack);;" + \
-			app.translate("MainMenu", "All files") + " (*.*)"
+		self._dyn = DynamicTranslator()
+
+		self._dyn.add(self._setFileFormatsString)
+
 		self._default_dir = '~'
 		self._preferences_window = None
 
-		file = self.addMenu(app.translate("MainMenu", "&File"))
+		file = self.addMenu("")
+		self._dyn.add(file.setTitle).translate("MainMenu", "&File")
 
 		file_new = QtGui.QAction(app.translate("MainMenu", "&New Sack"), self)
 		file_new.setShortcut(hotkeys.NEW)
@@ -31,6 +66,15 @@ class MainMenu(QtGui.QMenuBar):
 		preferences = QtGui.QAction("&Preferences", self)
 		preferences.triggered.connect(self._showPreferences)
 		file.addAction(preferences)
+
+	def _setFileFormatsString(self):
+		self._file_formats = app.translate("MainMenu", "Sack databases") + " (*.sack);;" + \
+			app.translate("MainMenu", "All files") + " (*.*)"
+
+	def changeEvent(self, e):
+		if e.type() == QtCore.QEvent.LanguageChange:
+			self._dyn.refresh()
+		QtGui.QMenuBar.changeEvent(self, e)
 
 	def _showFileNewDialog(self):
 		self._showFileDialog(QtGui.QFileDialog.getSaveFileName,
