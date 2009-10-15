@@ -30,4 +30,7 @@ class DBWindow(QtGui.QMainWindow):
 		self.resize(app.settings.value('dbwindow/width'),
 			app.settings.value('dbwindow/height'))
 
+		self.dynTr(self._setStatusBar).refresh()
+
+	def _setStatusBar(self):
 		self.statusBar().showMessage(app.translate('DBWindow', 'Ready'))
