@@ -10,7 +10,7 @@ class MainMenu(QtGui.QMenuBar):
 	def __init__(self):
 		QtGui.QMenuBar.__init__(self)
 
-		self.dynTr(self._setFileFormatsString)
+		self.dynTr(self._setFileFormatsString).refresh()
 
 		self._default_dir = '~'
 		self._preferences_window = None

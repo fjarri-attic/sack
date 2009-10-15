@@ -22,7 +22,6 @@ class _DynamicTranslator:
 	class Changer:
 		def __init__(self, changer_func):
 			self._changer_func = changer_func
-			self._context = None
 			self._text = None
 
 		def translate(self, context, text):
@@ -31,10 +30,10 @@ class _DynamicTranslator:
 			self.refresh()
 
 		def refresh(self):
-			if self._text is not None:
-				self._changer_func(app.translate(self._context, self._text))
-			else:
+			if self._text is None:
 				self._changer_func()
+			else:
+				self._changer_func(app.translate(self._context, self._text))
 
 	def __init__(self):
 		self._changers = []
