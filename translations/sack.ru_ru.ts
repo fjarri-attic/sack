@@ -3,12 +3,12 @@
 <context>
     <name>Language</name>
     <message>
-        <location filename="preferences.py" line="45"/>
+        <location filename="preferences.py" line="44"/>
         <source>Full Name</source>
         <translation>Russian (Russian Federation)</translation>
     </message>
     <message>
-        <location filename="preferences.py" line="46"/>
+        <location filename="preferences.py" line="45"/>
         <source>Short Name</source>
         <translation>ru_RU</translation>
     </message>
@@ -16,42 +16,42 @@
 <context>
     <name>MainMenu</name>
     <message>
-        <location filename="mainmenu.py" line="15"/>
+        <location filename="mainmenu.py" line="12"/>
         <source>Sack databases</source>
         <translation>Базы данных Sack</translation>
     </message>
     <message>
-        <location filename="mainmenu.py" line="16"/>
+        <location filename="mainmenu.py" line="13"/>
         <source>All files</source>
         <translation>Все файлы</translation>
     </message>
     <message>
-        <location filename="mainmenu.py" line="20"/>
+        <location filename="mainmenu.py" line="17"/>
         <source>&amp;File</source>
         <translation>&amp;Файл</translation>
     </message>
     <message>
-        <location filename="mainmenu.py" line="22"/>
+        <location filename="mainmenu.py" line="19"/>
         <source>&amp;New Sack</source>
         <translation>&amp;Новый файл Sack</translation>
     </message>
     <message>
-        <location filename="mainmenu.py" line="27"/>
+        <location filename="mainmenu.py" line="24"/>
         <source>&amp;Open Sack</source>
         <translation>&amp;Открыть файл Sack</translation>
     </message>
     <message>
         <location filename="mainmenu.py" line="32"/>
         <source>&amp;Preferences</source>
-        <translation>&amp;Настройки</translation>
+        <translation type="obsolete">&amp;Настройки</translation>
     </message>
     <message>
-        <location filename="mainmenu.py" line="37"/>
+        <location filename="mainmenu.py" line="36"/>
         <source>New Sack</source>
         <translation>Новый файл Sack</translation>
     </message>
     <message>
-        <location filename="mainmenu.py" line="41"/>
+        <location filename="mainmenu.py" line="40"/>
         <source>Open Sack</source>
         <translation>Открыть файл Sack</translation>
     </message>

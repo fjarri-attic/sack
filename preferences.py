@@ -20,7 +20,6 @@ class Preferences(QtGui.QDialog):
 				self._language.setCurrentIndex(i)
 		self._language.currentIndexChanged.connect(self._languageChanged)
 
-
 		layout = QtGui.QVBoxLayout()
 		layout.addWidget(self._language)
 

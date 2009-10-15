@@ -3,12 +3,12 @@
 <context>
     <name>Language</name>
     <message>
-        <location filename="preferences.py" line="45"/>
+        <location filename="preferences.py" line="44"/>
         <source>Full Name</source>
         <translation>English (United States)</translation>
     </message>
     <message>
-        <location filename="preferences.py" line="46"/>
+        <location filename="preferences.py" line="45"/>
         <source>Short Name</source>
         <translation>en_US</translation>
     </message>
@@ -16,42 +16,37 @@
 <context>
     <name>MainMenu</name>
     <message>
-        <location filename="mainmenu.py" line="15"/>
+        <location filename="mainmenu.py" line="12"/>
         <source>Sack databases</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainmenu.py" line="16"/>
+        <location filename="mainmenu.py" line="13"/>
         <source>All files</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainmenu.py" line="20"/>
+        <location filename="mainmenu.py" line="17"/>
         <source>&amp;File</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainmenu.py" line="22"/>
+        <location filename="mainmenu.py" line="19"/>
         <source>&amp;New Sack</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainmenu.py" line="27"/>
+        <location filename="mainmenu.py" line="24"/>
         <source>&amp;Open Sack</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainmenu.py" line="32"/>
-        <source>&amp;Preferences</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="mainmenu.py" line="37"/>
+        <location filename="mainmenu.py" line="36"/>
         <source>New Sack</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainmenu.py" line="41"/>
+        <location filename="mainmenu.py" line="40"/>
         <source>Open Sack</source>
         <translation type="unfinished"></translation>
     </message>

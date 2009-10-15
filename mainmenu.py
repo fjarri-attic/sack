@@ -9,9 +9,6 @@ class MainMenu(QtGui.QMenuBar):
 	def __init__(self):
 		QtGui.QMenuBar.__init__(self)
 
-		print(app.inst)
-		app.inst.reloadTranslator.emit()
-		print(app.inst.translate("Language", "Short Name"))
 		self._file_formats = app.translate("MainMenu", "Sack databases") + " (*.sack);;" + \
 			app.translate("MainMenu", "All files") + " (*.*)"
 		self._default_dir = '~'
@@ -29,7 +26,9 @@ class MainMenu(QtGui.QMenuBar):
 		file_open.triggered.connect(self._showFileOpenDialog)
 		file.addAction(file_open)
 
-		preferences = QtGui.QAction(app.translate("MainMenu", "&Preferences"), self)
+		# not translating this name, because on Mac OS it will be automatically
+		# linked to application's standard preferences menu item
+		preferences = QtGui.QAction("&Preferences", self)
 		preferences.triggered.connect(self._showPreferences)
 		file.addAction(preferences)
 
