@@ -8,3 +8,7 @@ config
 *.bak
 documentation.rst
 documentation.html
+*.sack
+sack_qrc.py
+translations/*.qm
+
