@@ -21,12 +21,12 @@
 <context>
     <name>Language</name>
     <message>
-        <location filename="preferences.py" line="50"/>
+        <location filename="globals.py" line="85"/>
         <source>Full Name</source>
         <translation>Russian (Russian Federation)</translation>
     </message>
     <message>
-        <location filename="preferences.py" line="51"/>
+        <location filename="globals.py" line="86"/>
         <source>Short Name</source>
         <translation>ru_RU</translation>
     </message>
@@ -82,7 +82,7 @@
         <translation>Настройки</translation>
     </message>
     <message>
-        <location filename="preferences.py" line="31"/>
+        <location filename="preferences.py" line="29"/>
         <source>Current locale</source>
         <translation>Язык системы</translation>
     </message>

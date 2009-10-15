@@ -67,5 +67,25 @@ def dynamically_translated(qobj_class):
 	DynTrClass.__name__ = qobj_class.__name__
 	return DynTrClass
 
+def findTranslationFiles():
+
+	# TODO: probably it is not the right place for this function,
+	# but at the moment I cannot think of a better one
+
+	translations_dir = QtCore.QDir(':/translations')
+	file_names = translations_dir.entryList(['sack.*.qm'],
+		QtCore.QDir.Files, QtCore.QDir.Name)
+
+	translator = QtCore.QTranslator()
+
+	translation_files = []
+	for file_name in file_names:
+		full_path = translations_dir.filePath(file_name)
+		translator.load(full_path)
+		full_name = translator.translate('Language', 'Full Name')
+		short_name = translator.translate('Language', 'Short Name')
+		translation_files.append((short_name, full_name, full_path))
+
+	return translation_files
 
 app = _GlobalsWrapper()

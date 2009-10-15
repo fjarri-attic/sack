@@ -49,24 +49,16 @@ class Application(QtGui.QApplication):
 
 	def _reloadTranslator(self):
 
-		lang_from_config = app.settings.value("ui/language")
-
-		translations_dir = QtCore.QDir(':/translations')
-		file_names = translations_dir.entryList(['sack.*.qm'],
-			QtCore.QDir.Files, QtCore.QDir.Name)
-
 		translator = QtCore.QTranslator()
 
+		lang_from_config = app.settings.value("ui/language")
 		if lang_from_config is None:
 			locale = QtCore.QLocale.system()
 			lang_from_config = locale.name()
 
 		translations = {}
-		for file_name in file_names:
-			# TODO: check that translator was successfully loaded
-			translator.load(translations_dir.filePath(file_name))
-			short_name = translator.translate('Language', 'Short Name')
-			translations[short_name] = translations_dir.filePath(file_name)
+		for short_name, _, full_path in findTranslationFiles():
+			translations[short_name] = full_path
 
 		if lang_from_config not in translations:
 			lang_from_config = app.settings('ui/language_fallback')
