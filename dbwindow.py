@@ -5,6 +5,7 @@ import brain
 from globals import *
 
 
+@dynamically_translated
 class DBWindow(QtGui.QMainWindow):
 	def __init__(self, file_name, new_file):
 		QtGui.QMainWindow.__init__(self)
@@ -17,8 +18,10 @@ class DBWindow(QtGui.QMainWindow):
 		tabbar.addTab(QtGui.QWidget(), 'first')
 		tabbar.addTab(QtGui.QWidget(), 'second')
 
-		tags_dock = QtGui.QDockWidget(app.translate('DBWindow', 'Tags'))
-		shelf_dock = QtGui.QDockWidget(app.translate('DBWindow', 'Shelf'))
+		tags_dock = QtGui.QDockWidget()
+		self.dynTr(tags_dock.setWindowTitle).translate('DBWindow', 'Tags')
+		shelf_dock = QtGui.QDockWidget()
+		self.dynTr(shelf_dock.setWindowTitle).translate('DBWindow', 'Shelf')
 
 		self.setCentralWidget(tabbar)
 		self.addDockWidget(QtCore.Qt.LeftDockWidgetArea, tags_dock)
