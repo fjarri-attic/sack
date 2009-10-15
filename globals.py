@@ -17,7 +17,7 @@ class _GlobalsWrapper:
 
 
 
-class DynamicTranslator:
+class _DynamicTranslator:
 
 	class Changer:
 		def __init__(self, changer_func):
@@ -47,6 +47,26 @@ class DynamicTranslator:
 	def refresh(self):
 		for changer in self._changers:
 			changer.refresh()
+
+
+def dynamically_translated(qobj_class):
+
+	class DynTrClass(qobj_class):
+
+		def __init__(self, *args, **kwds):
+			self.__dyntr = _DynamicTranslator()
+			qobj_class.__init__(self, *args, **kwds)
+
+		def dynTr(self, changer_func):
+			return self.__dyntr.add(changer_func)
+
+		def changeEvent(self, e):
+			if e.type() == QtCore.QEvent.LanguageChange:
+				self.__dyntr.refresh()
+			qobj_class.changeEvent(self, e)
+
+	DynTrClass.__name__ = qobj_class.__name__
+	return DynTrClass
 
 
 app = _GlobalsWrapper()
