@@ -17,8 +17,8 @@ class DBWindow(QtGui.QMainWindow):
 		tabbar.addTab(QtGui.QWidget(), 'first')
 		tabbar.addTab(QtGui.QWidget(), 'second')
 
-		tags_dock = QtGui.QDockWidget('tags')
-		shelf_dock = QtGui.QDockWidget('shelf')
+		tags_dock = QtGui.QDockWidget(app.translate('DBWindow', 'Tags'))
+		shelf_dock = QtGui.QDockWidget(app.translate('DBWindow', 'Shelf'))
 
 		self.setCentralWidget(tabbar)
 		self.addDockWidget(QtCore.Qt.LeftDockWidgetArea, tags_dock)

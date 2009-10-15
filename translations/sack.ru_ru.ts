@@ -1,6 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS><TS version="1.1" language="ru_RU">
 <context>
+    <name>DBWindow</name>
+    <message>
+        <location filename="dbwindow.py" line="20"/>
+        <source>Tags</source>
+        <translation>Теги</translation>
+    </message>
+    <message>
+        <location filename="dbwindow.py" line="21"/>
+        <source>Shelf</source>
+        <translation>Полка</translation>
+    </message>
+</context>
+<context>
     <name>Language</name>
     <message>
         <location filename="preferences.py" line="44"/>
