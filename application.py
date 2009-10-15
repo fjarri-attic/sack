@@ -11,7 +11,8 @@ import preferences
 
 _DEFAULT_SETTINGS = {
 	'ui': {
-		'language': 'en_US' # user interface language
+		'language': None, # user interface language; None = use current locale
+		'language_fallback': 'en_US' # if language file was not found, use this one
 	},
 	'dbwindow': {
 		'width': 600, # starting width of DB window
@@ -55,18 +56,27 @@ class Application(QtGui.QApplication):
 			QtCore.QDir.Files, QtCore.QDir.Name)
 
 		translator = QtCore.QTranslator()
+
+		if lang_from_config is None:
+			locale = QtCore.QLocale.system()
+			lang_from_config = locale.name()
+
+		translations = {}
 		for file_name in file_names:
 			# TODO: check that translator was successfully loaded
 			translator.load(translations_dir.filePath(file_name))
 			short_name = translator.translate('Language', 'Short Name')
-			if short_name == lang_from_config:
-				if self._translator is not None:
-					self.removeTranslator(self._translator)
-				self._translator = translator
-				self.installTranslator(translator)
-				return
+			translations[short_name] = translations_dir.filePath(file_name)
 
-		# TODO: raise an error here
+		if lang_from_config not in translations:
+			lang_from_config = app.settings('ui/language_fallback')
+
+		if lang_from_config in translations:
+			if self._translator is not None:
+				self.removeTranslator(self._translator)
+			translator.load(translations[lang_from_config])
+			self._translator = translator
+			self.installTranslator(translator)
 
 	createDBWindow = QtCore.pyqtSignal(str, bool)
 
