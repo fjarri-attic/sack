@@ -52,14 +52,14 @@ class Application(QtGui.QApplication):
 		translations_dir = QtCore.QDir(':/translations')
 		file_names = translations_dir.entryList(['sack.*.qm'],
 			QtCore.QDir.Files, QtCore.QDir.Name)
-		print("reloadTranslator")
+
 		translator = QtCore.QTranslator()
 		for file_name in file_names:
 			# TODO: check that translator was successfully loaded
 			translator.load(translations_dir.filePath(file_name))
 			short_name = translator.translate('Language', 'Short Name')
 			if short_name == lang_from_config:
-				print(short_name)
+				self._translator = translator
 				self.installTranslator(translator)
 				return
 
