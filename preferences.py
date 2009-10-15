@@ -1,6 +1,6 @@
 from PyQt4 import QtGui, QtCore
 
-from appglobals import *
+from globals import *
 
 
 class Preferences(QtGui.QDialog):

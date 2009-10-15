@@ -2,7 +2,7 @@ from PyQt4 import QtGui, QtCore
 
 import brain
 
-from appglobals import *
+from globals import *
 
 
 class DBWindow(QtGui.QMainWindow):

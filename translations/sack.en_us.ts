@@ -34,37 +34,37 @@
 <context>
     <name>MainMenu</name>
     <message>
-        <location filename="mainmenu.py" line="70"/>
+        <location filename="mainmenu.py" line="41"/>
         <source>Sack databases</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainmenu.py" line="71"/>
+        <location filename="mainmenu.py" line="42"/>
         <source>All files</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainmenu.py" line="53"/>
+        <location filename="mainmenu.py" line="23"/>
         <source>&amp;New Sack</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainmenu.py" line="58"/>
+        <location filename="mainmenu.py" line="29"/>
         <source>&amp;Open Sack</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainmenu.py" line="79"/>
+        <location filename="mainmenu.py" line="50"/>
         <source>New Sack</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainmenu.py" line="83"/>
+        <location filename="mainmenu.py" line="54"/>
         <source>Open Sack</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainmenu.py" line="51"/>
+        <location filename="mainmenu.py" line="20"/>
         <source>&amp;File</source>
         <translation></translation>
     </message>

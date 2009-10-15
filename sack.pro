@@ -1,7 +1,7 @@
 SOURCES = \
-	appglobals.py \
 	application.py \
 	dbwindow.py \
+	globals.py \
 	hotkeys.py \
 	mainmenu.py \
 	preferences.py \

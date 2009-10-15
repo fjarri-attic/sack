@@ -3,8 +3,8 @@ import os.path
 
 from PyQt4 import QtGui, QtCore
 
-from appglobals import *
 import dbwindow
+from globals import *
 import mainmenu
 import preferences
 

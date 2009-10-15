@@ -1,39 +1,7 @@
 from PyQt4 import QtGui
 
-from appglobals import *
+from globals import *
 import hotkeys
-
-
-class DynamicTranslator:
-
-	class Changer:
-		def __init__(self, changer):
-			self._changer = changer
-			self._context = None
-			self._text = None
-
-		def translate(self, context, text):
-			self._context = context
-			self._text = text
-			self.refresh()
-
-		def refresh(self):
-			if self._text is not None:
-				self._changer(app.translate(self._context, self._text))
-			else:
-				self._changer()
-
-	def __init__(self):
-		self._changers = []
-
-	def add(self, changer):
-		c = self.Changer(changer)
-		self._changers.append(c)
-		return c
-
-	def refresh(self):
-		for changer in self._changers:
-			changer.refresh()
 
 
 class MainMenu(QtGui.QMenuBar):
@@ -41,22 +9,24 @@ class MainMenu(QtGui.QMenuBar):
 	def __init__(self):
 		QtGui.QMenuBar.__init__(self)
 
-		self._dyn = DynamicTranslator()
+		self._dyntr = DynamicTranslator()
 
-		self._dyn.add(self._setFileFormatsString)
+		self._dyntr.add(self._setFileFormatsString)
 
 		self._default_dir = '~'
 		self._preferences_window = None
 
 		file = self.addMenu("")
-		self._dyn.add(file.setTitle).translate("MainMenu", "&File")
+		self._dyntr.add(file.setTitle).translate("MainMenu", "&File")
 
-		file_new = QtGui.QAction(app.translate("MainMenu", "&New Sack"), self)
+		file_new = QtGui.QAction(self)
+		self._dyntr.add(file_new.setText).translate("MainMenu", "&New Sack")
 		file_new.setShortcut(hotkeys.NEW)
 		file_new.triggered.connect(self._showFileNewDialog)
 		file.addAction(file_new)
 
-		file_open = QtGui.QAction(app.translate("MainMenu", "&Open Sack"), self)
+		file_open = QtGui.QAction(self)
+		self._dyntr.add(file_open.setText).translate("MainMenu", "&Open Sack")
 		file_open.setShortcut(hotkeys.OPEN)
 		file_open.triggered.connect(self._showFileOpenDialog)
 		file.addAction(file_open)
@@ -73,7 +43,7 @@ class MainMenu(QtGui.QMenuBar):
 
 	def changeEvent(self, e):
 		if e.type() == QtCore.QEvent.LanguageChange:
-			self._dyn.refresh()
+			self._dyntr.refresh()
 		QtGui.QMenuBar.changeEvent(self, e)
 
 	def _showFileNewDialog(self):
