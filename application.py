@@ -78,6 +78,13 @@ class Application(QtGui.QApplication):
 			self._translator = translator
 			self.installTranslator(translator)
 
+	def changeEvent(self, e):
+		if e.type() == QtCore.QEvent.LocaleChange:
+			if app.settings.value("ui/language") == None:
+				self._reloadTranslator()
+
+		QtGui.Application.changeEvent(self, e)
+
 	createDBWindow = QtCore.pyqtSignal(str, bool)
 
 	def _createDBWindow(self, filename, new_file):
