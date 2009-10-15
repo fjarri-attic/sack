@@ -3,12 +3,13 @@ from PyQt4 import QtGui, QtCore
 from globals import *
 
 
+@dynamically_translated
 class Preferences(QtGui.QDialog):
 
 	def __init__(self):
 		QtGui.QDialog.__init__(self)
 
-		self.setWindowTitle(app.translate('Preferences', 'Preferences'))
+		self.dynTr(self.setWindowTitle).translate('Preferences', 'Preferences')
 
 		available_languages = self._findTranslationFiles()
 		lang_from_config = app.settings.value('ui/language')
