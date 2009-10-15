@@ -15,8 +15,12 @@ class Preferences(QtGui.QDialog):
 		self._language.currentIndexChanged.connect(self._languageChanged)
 		self.dynTr(self._setCurrentLocaleString).refresh()
 
-		layout = QtGui.QVBoxLayout()
-		layout.addWidget(self._language)
+		_language_label = QtGui.QLabel()
+		self.dynTr(_language_label.setText).translate('Preferences', 'Language')
+
+		layout = QtGui.QGridLayout()
+		layout.addWidget(_language_label, 0, 0)
+		layout.addWidget(self._language, 0, 1)
 
 		layout.setSizeConstraint(QtGui.QLayout.SetFixedSize)
 

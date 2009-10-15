@@ -77,8 +77,13 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="preferences.py" line="30"/>
+        <location filename="preferences.py" line="36"/>
         <source>Current locale</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="preferences.py" line="19"/>
+        <source>Language</source>
         <translation></translation>
     </message>
 </context>
