@@ -21,12 +21,12 @@
 <context>
     <name>Language</name>
     <message>
-        <location filename="preferences.py" line="45"/>
+        <location filename="preferences.py" line="50"/>
         <source>Full Name</source>
         <translation>English (United States)</translation>
     </message>
     <message>
-        <location filename="preferences.py" line="46"/>
+        <location filename="preferences.py" line="51"/>
         <source>Short Name</source>
         <translation>en_US</translation>
     </message>
@@ -74,6 +74,11 @@
     <message>
         <location filename="preferences.py" line="12"/>
         <source>Preferences</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="preferences.py" line="31"/>
+        <source>Current locale</source>
         <translation></translation>
     </message>
 </context>

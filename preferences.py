@@ -19,12 +19,17 @@ class Preferences(QtGui.QDialog):
 			self._language.insertItem(i, full_name, short_name)
 			if short_name == lang_from_config:
 				self._language.setCurrentIndex(i)
+		self.dynTr(self._setCurrentLocaleString).refresh()
 		self._language.currentIndexChanged.connect(self._languageChanged)
 
 		layout = QtGui.QVBoxLayout()
 		layout.addWidget(self._language)
 
 		self.setLayout(layout)
+
+	def _setCurrentLocaleString(self):
+		self._language.setItemText(0,
+			app.translate('Preferences', 'Current locale'))
 
 	@QtCore.pyqtSlot(int)
 	def _languageChanged(self, index):
@@ -39,7 +44,7 @@ class Preferences(QtGui.QDialog):
 
 		translator = QtCore.QTranslator()
 
-		languages = []
+		languages = [(None, '')]
 		for file_name in file_names:
 			translator.load(translations_dir.filePath(file_name))
 			full_name = translator.translate('Language', 'Full Name')

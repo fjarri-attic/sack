@@ -21,12 +21,12 @@
 <context>
     <name>Language</name>
     <message>
-        <location filename="preferences.py" line="45"/>
+        <location filename="preferences.py" line="50"/>
         <source>Full Name</source>
         <translation>Russian (Russian Federation)</translation>
     </message>
     <message>
-        <location filename="preferences.py" line="46"/>
+        <location filename="preferences.py" line="51"/>
         <source>Short Name</source>
         <translation>ru_RU</translation>
     </message>
@@ -80,6 +80,11 @@
         <location filename="preferences.py" line="12"/>
         <source>Preferences</source>
         <translation>Настройки</translation>
+    </message>
+    <message>
+        <location filename="preferences.py" line="31"/>
+        <source>Current locale</source>
+        <translation>Язык системы</translation>
     </message>
 </context>
 </TS>
