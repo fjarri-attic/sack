@@ -18,7 +18,7 @@ class Preferences(QtGui.QDialog):
 		layout = QtGui.QVBoxLayout()
 		layout.addWidget(self._language)
 
-		# TODO: find a way to disable size grip (setSizeGripEnabled does not work)
+		layout.setSizeConstraint(QtGui.QLayout.SetFixedSize)
 
 		self.setLayout(layout)
 
