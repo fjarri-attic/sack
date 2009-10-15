@@ -23,7 +23,7 @@
     <message>
         <location filename="globals.py" line="85"/>
         <source>Full Name</source>
-        <translation>Russian (Russian Federation)</translation>
+        <translation>Русский (Россия)</translation>
     </message>
     <message>
         <location filename="globals.py" line="86"/>
@@ -82,7 +82,7 @@
         <translation>Настройки</translation>
     </message>
     <message>
-        <location filename="preferences.py" line="29"/>
+        <location filename="preferences.py" line="30"/>
         <source>Current locale</source>
         <translation>Язык системы</translation>
     </message>
