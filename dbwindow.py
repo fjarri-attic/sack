@@ -27,4 +27,4 @@ class DBWindow(QtGui.QMainWindow):
 		self.resize(app.settings.value('dbwindow/width'),
 			app.settings.value('dbwindow/height'))
 
-		self.statusBar().showMessage('Ready')
+		self.statusBar().showMessage(app.translate('DBWindow', 'Ready'))

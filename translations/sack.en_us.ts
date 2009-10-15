@@ -12,6 +12,11 @@
         <source>Shelf</source>
         <translation></translation>
     </message>
+    <message>
+        <location filename="dbwindow.py" line="30"/>
+        <source>Ready</source>
+        <translation></translation>
+    </message>
 </context>
 <context>
     <name>Language</name>
