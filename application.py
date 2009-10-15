@@ -29,6 +29,7 @@ class Application(QtGui.QApplication):
 
 		self._fillSettings(_DEFAULT_SETTINGS)
 
+		self._translator = None
 		self._reloadTranslator()
 
 		self._main_menu = mainmenu.MainMenu()
@@ -59,6 +60,8 @@ class Application(QtGui.QApplication):
 			translator.load(translations_dir.filePath(file_name))
 			short_name = translator.translate('Language', 'Short Name')
 			if short_name == lang_from_config:
+				if self._translator is not None:
+					self.removeTranslator(self._translator)
 				self._translator = translator
 				self.installTranslator(translator)
 				return
