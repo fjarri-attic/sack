@@ -1,3 +1,7 @@
+"""
+Global application menu.
+"""
+
 from PyQt4 import QtGui
 
 from globals import *
@@ -12,8 +16,11 @@ class MainMenu(QtGui.QMenuBar):
 
 		self.dynTr(self._setFileFormatsString).refresh()
 
+		# default directory for New and Open file dialogs
+		# TODO: remember the last used directory and use it here
 		self._default_dir = '~'
-		self._preferences_window = None
+
+		# File menu
 
 		file = self.addMenu("")
 		self.dynTr(file.setTitle).translate("MainMenu", "&File")
@@ -37,10 +44,14 @@ class MainMenu(QtGui.QMenuBar):
 		file.addAction(preferences)
 
 	def _setFileFormatsString(self):
-		self._file_formats = app.translate("MainMenu", "Sack databases") + " (*.sack);;" + \
-			app.translate("MainMenu", "All files") + " (*.*)"
+		"""Helper for dynamic translation - set file formats string."""
+		self._file_formats = app.translate("MainMenu", "Sack databases") + \
+			" (*.sack);;" + app.translate("MainMenu", "All files") + " (*.*)"
 
 	def _showFileNewDialog(self):
+		# Using Save File dialog, because we need to create physical representation
+		# of DB on a medium before starting to change it.
+		# In other words, do not bother with copying an in-memory DB to disk.
 		self._showFileDialog(QtGui.QFileDialog.getSaveFileName,
 			app.translate("MainMenu", "New Sack"), True)
 
@@ -49,6 +60,7 @@ class MainMenu(QtGui.QMenuBar):
 			app.translate("MainMenu", "Open Sack"), False)
 
 	def _showFileDialog(self, func, title, new_file):
+		"""Show dialog for choosing file to open"""
 		filename = func(self, title,
 			self._default_dir, self._file_formats)
 		if filename is not None:

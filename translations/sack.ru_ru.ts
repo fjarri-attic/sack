@@ -34,27 +34,27 @@
 <context>
     <name>MainMenu</name>
     <message>
-        <location filename="mainmenu.py" line="40"/>
+        <location filename="mainmenu.py" line="48"/>
         <source>Sack databases</source>
         <translation>Базы данных Sack</translation>
     </message>
     <message>
-        <location filename="mainmenu.py" line="41"/>
+        <location filename="mainmenu.py" line="49"/>
         <source>All files</source>
         <translation>Все файлы</translation>
     </message>
     <message>
-        <location filename="mainmenu.py" line="19"/>
+        <location filename="mainmenu.py" line="26"/>
         <source>&amp;File</source>
         <translation>&amp;Файл</translation>
     </message>
     <message>
-        <location filename="mainmenu.py" line="22"/>
+        <location filename="mainmenu.py" line="29"/>
         <source>&amp;New Sack</source>
         <translation>&amp;Новый файл Sack</translation>
     </message>
     <message>
-        <location filename="mainmenu.py" line="28"/>
+        <location filename="mainmenu.py" line="35"/>
         <source>&amp;Open Sack</source>
         <translation>&amp;Открыть файл Sack</translation>
     </message>
@@ -64,12 +64,12 @@
         <translation type="obsolete">&amp;Настройки</translation>
     </message>
     <message>
-        <location filename="mainmenu.py" line="44"/>
+        <location filename="mainmenu.py" line="55"/>
         <source>New Sack</source>
         <translation>Новый файл Sack</translation>
     </message>
     <message>
-        <location filename="mainmenu.py" line="48"/>
+        <location filename="mainmenu.py" line="59"/>
         <source>Open Sack</source>
         <translation>Открыть файл Sack</translation>
     </message>
