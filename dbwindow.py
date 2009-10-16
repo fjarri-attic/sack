@@ -1,3 +1,7 @@
+"""
+Main class for Database window
+"""
+
 from PyQt4 import QtGui, QtCore
 
 import brain
@@ -7,6 +11,7 @@ from globals import *
 
 @dynamically_translated
 class DBWindow(QtGui.QMainWindow):
+
 	def __init__(self, file_name, new_file):
 		QtGui.QMainWindow.__init__(self)
 

@@ -3,17 +3,17 @@
 <context>
     <name>DBWindow</name>
     <message>
-        <location filename="dbwindow.py" line="22"/>
+        <location filename="dbwindow.py" line="27"/>
         <source>Tags</source>
         <translation>Теги</translation>
     </message>
     <message>
-        <location filename="dbwindow.py" line="24"/>
+        <location filename="dbwindow.py" line="29"/>
         <source>Shelf</source>
         <translation>Полка</translation>
     </message>
     <message>
-        <location filename="dbwindow.py" line="36"/>
+        <location filename="dbwindow.py" line="41"/>
         <source>Ready</source>
         <translation>Готов</translation>
     </message>
