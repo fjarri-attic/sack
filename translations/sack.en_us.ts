@@ -21,12 +21,12 @@
 <context>
     <name>Language</name>
     <message>
-        <location filename="globals.py" line="85"/>
+        <location filename="globals.py" line="89"/>
         <source>Full Name</source>
         <translation>English (United States)</translation>
     </message>
     <message>
-        <location filename="globals.py" line="86"/>
+        <location filename="globals.py" line="95"/>
         <source>Short Name</source>
         <translation>en_US</translation>
     </message>

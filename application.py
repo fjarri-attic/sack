@@ -61,14 +61,24 @@ class Application(QtGui.QApplication):
 			translations[short_name] = full_path
 
 		if lang_from_config not in translations:
+			QtCore.qWarning("Translation file for " + lang_from_config +
+				" was not found, falling back")
 			lang_from_config = app.settings('ui/language_fallback')
 
 		if lang_from_config in translations:
 			if self._translator is not None:
 				self.removeTranslator(self._translator)
-			translator.load(translations[lang_from_config])
-			self._translator = translator
-			self.installTranslator(translator)
+				self._translator = None
+
+			if translator.load(translations[lang_from_config]):
+				self.installTranslator(translator)
+				self._translator = translator
+			else:
+				QtCore.qCritical("Failed to load translation file " +
+					translations[lang_from_config])
+		else:
+			QtCore.qCritical("Translation file for " +
+				lang_from_config + " was not found")
 
 	def changeEvent(self, e):
 		if e.type() == QtCore.QEvent.LocaleChange:

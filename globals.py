@@ -81,9 +81,23 @@ def findTranslationFiles():
 	translation_files = []
 	for file_name in file_names:
 		full_path = translations_dir.filePath(file_name)
-		translator.load(full_path)
+
+		if not translator.load(full_path):
+			QtCore.qWarning("Failed to load translation file " + full_path)
+			continue
+
 		full_name = translator.translate('Language', 'Full Name')
+		if full_name is None:
+			QtCore.qWarning("Translation file " + full_path +
+				" does not contain full language name")
+			continue
+
 		short_name = translator.translate('Language', 'Short Name')
+		if short_name is None:
+			QtCore.qWarning("Translation file " + full_path +
+				" does not contain short language name")
+			continue
+
 		translation_files.append((short_name, full_name, full_path))
 
 	return translation_files
