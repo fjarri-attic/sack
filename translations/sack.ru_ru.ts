@@ -77,17 +77,17 @@
 <context>
     <name>Preferences</name>
     <message>
-        <location filename="preferences.py" line="12"/>
+        <location filename="preferences.py" line="16"/>
         <source>Preferences</source>
         <translation>Настройки</translation>
     </message>
     <message>
-        <location filename="preferences.py" line="36"/>
+        <location filename="preferences.py" line="49"/>
         <source>Current locale</source>
         <translation>Язык системы</translation>
     </message>
     <message>
-        <location filename="preferences.py" line="19"/>
+        <location filename="preferences.py" line="21"/>
         <source>Language</source>
         <translation>Язык</translation>
     </message>

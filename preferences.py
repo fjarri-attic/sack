@@ -1,3 +1,7 @@
+"""
+Application preferences window
+"""
+
 from PyQt4 import QtGui, QtCore
 
 from globals import *
@@ -11,17 +15,22 @@ class Preferences(QtGui.QDialog):
 
 		self.dynTr(self.setWindowTitle).translate('Preferences', 'Preferences')
 
+		# Language setting control
+
+		_language_label = QtGui.QLabel()
+		self.dynTr(_language_label.setText).translate('Preferences', 'Language')
+
 		self._language = self._createTranslationsList()
 		self._language.currentIndexChanged.connect(self._languageChanged)
 		self.dynTr(self._setCurrentLocaleString).refresh()
 
-		_language_label = QtGui.QLabel()
-		self.dynTr(_language_label.setText).translate('Preferences', 'Language')
+		# Create window layout
 
 		layout = QtGui.QGridLayout()
 		layout.addWidget(_language_label, 0, 0)
 		layout.addWidget(self._language, 0, 1)
 
+		# Block window resizing (its size will depend only on child widgets)
 		layout.setSizeConstraint(QtGui.QLayout.SetFixedSize)
 
 		self.setLayout(layout)
@@ -33,16 +42,25 @@ class Preferences(QtGui.QDialog):
 		app.inst.reloadTranslator.emit()
 
 	def _setCurrentLocaleString(self):
+		"""
+		Helper for dynamical translation which sets the name of
+		first language list element.
+		"""
 		self._language.setItemText(0,
 			app.translate('Preferences', 'Current locale'))
 
 	def _createTranslationsList(self):
+		"""
+		Returns combobox, filled with available interface translations.
+		Item data is a short name of the language, which serves as
+		the key for searching this file later.
+		"""
 
 		language_list = QtGui.QComboBox()
 		translation_files = findTranslationFiles()
 		lang_from_config = app.settings.value('ui/language')
 
-		languages = [(None, '')]
+		languages = [(None, '')] # option for watching the current locale
 		for short_name, full_name, _ in translation_files:
 			languages.append((short_name, full_name))
 
@@ -56,4 +74,7 @@ class Preferences(QtGui.QDialog):
 
 	def closeEvent(self, e):
 		QtGui.QDialog.closeEvent(self, e)
+
+		# notify application, that the preferences were closed
+		# (so that it could release pointer to this window)
 		app.inst.closePreferencesWindow.emit()
