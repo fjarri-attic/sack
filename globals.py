@@ -2,6 +2,8 @@
 Module for application-wide convenience functions and classes.
 """
 
+from logging import warning
+
 from PyQt4 import QtGui, QtCore
 
 
@@ -131,18 +133,18 @@ def findTranslationFiles():
 		full_path = translations_dir.filePath(file_name)
 
 		if not translator.load(full_path):
-			QtCore.qWarning("Failed to load translation file " + full_path)
+			warning("Failed to load translation file " + full_path)
 			continue
 
 		full_name = translator.translate('Language', 'Full Name')
 		if full_name is None:
-			QtCore.qWarning("Translation file " + full_path +
+			warning("Translation file " + full_path +
 				" does not contain full language name")
 			continue
 
 		short_name = translator.translate('Language', 'Short Name')
 		if short_name is None:
-			QtCore.qWarning("Translation file " + full_path +
+			warning("Translation file " + full_path +
 				" does not contain short language name")
 			continue
 

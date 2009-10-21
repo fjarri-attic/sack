@@ -2,6 +2,8 @@
 Main application class.
 """
 
+from logging import warning, error
+
 from PyQt4 import QtGui, QtCore
 
 import dbwindow
@@ -26,6 +28,7 @@ _DEFAULT_SETTINGS = {
 class Application(QtGui.QApplication):
 
 	def __init__(self, argv):
+
 		QtGui.QApplication.__init__(self, argv)
 		self.setApplicationName("Sack")
 		self.setOrganizationName("Manti")
@@ -73,7 +76,7 @@ class Application(QtGui.QApplication):
 
 		# if language file was not found, use the backup one
 		if lang_from_config not in translations:
-			QtCore.qWarning("Translation file for " + lang_from_config +
+			warning("Translation file for " + lang_from_config +
 				" was not found, falling back")
 			lang_from_config = app.settings('ui/language_fallback')
 
@@ -87,10 +90,10 @@ class Application(QtGui.QApplication):
 				self.installTranslator(translator)
 				self._translator = translator
 			else:
-				QtCore.qCritical("Failed to load translation file " +
+				error("Failed to load translation file " +
 					translations[lang_from_config])
 		else:
-			QtCore.qCritical("Translation file for " +
+			error("Translation file for " +
 				lang_from_config + " was not found")
 
 	def changeEvent(self, e):
