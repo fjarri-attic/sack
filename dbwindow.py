@@ -20,6 +20,11 @@ class DBWindow(QtGui.QMainWindow):
 			open_existing=(0 if new_file else 1))
 
 		tabbar = QtGui.QTabWidget()
+
+		tabbar.setTabsClosable(True)
+		tabbar.setUsesScrollButtons(True)
+		tabbar.setMovable(True)
+
 		tabbar.addTab(QtGui.QWidget(), 'first')
 		tabbar.addTab(QtGui.QWidget(), 'second')
 
