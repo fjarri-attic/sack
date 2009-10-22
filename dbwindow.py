@@ -25,8 +25,13 @@ class DBWindow(QtGui.QMainWindow):
 		tabbar.setUsesScrollButtons(True)
 		tabbar.setMovable(True)
 
-		tabbar.addTab(QtGui.QWidget(), 'first')
+		tabwidget = QtGui.QWidget()
+
+		tabbar.addTab(tabwidget, 'first')
 		tabbar.addTab(QtGui.QWidget(), 'second')
+
+		x = ObjectWidget('blablablablablablabla', tabwidget)
+		x.move(0, 0)
 
 		tags_dock = QtGui.QDockWidget()
 		self.dynTr(tags_dock.setWindowTitle).translate('DBWindow', 'Tags')
@@ -44,3 +49,31 @@ class DBWindow(QtGui.QMainWindow):
 
 	def _setStatusBar(self):
 		self.statusBar().showMessage(app.translate('DBWindow', 'Ready'))
+
+
+class ObjectWidget(QtGui.QLabel):
+
+	def __init__(self, title, parent):
+		QtGui.QLabel.__init__(self, "", parent)
+
+		self._title = title
+		self.setFrameStyle(QtGui.QFrame.StyledPanel + QtGui.QFrame.Plain)
+
+		self._redraw()
+
+	def _redraw(self):
+		metrics = self.fontMetrics()
+		height = metrics.height()
+
+		symbols_num = app.settings.value('ui/object_widget_size')
+		self.setMinimumWidth(metrics.width('a' * symbols_num))
+
+		internal_width = self.rect().width()
+		title = self._title
+		if metrics.width(title) > internal_width:
+			counter = len(title) - 1
+			while metrics.width(title + "...", counter) > internal_width and counter > 0:
+				counter -= 1
+			title = title[:counter] + "..."
+
+		self.setText(title)
