@@ -16,7 +16,8 @@ import preferences
 _DEFAULT_SETTINGS = {
 	'ui': {
 		'language': None, # user interface language; None = use current locale
-		'language_fallback': 'en_US' # if language file was not found, use this one
+		'language_fallback': 'en_US', # if language file was not found, use this one
+		'object_widget_size': 15 # size of object widget relative to symbol width
 	},
 	'dbwindow': {
 		'width': 600, # starting width of DB window
@@ -53,6 +54,9 @@ class Application(QtGui.QApplication):
 		# we need menu to stay alive even if all DB windows are closed
 		# (default Mac OS applications behavior)
 		self.setQuitOnLastWindowClosed(False)
+
+		# for debug purposes
+		app.inst.createDBWindow.emit("/Users/bogdan/gitrepos/sack/test.sack", False)
 
 	reloadTranslator = QtCore.pyqtSignal()
 
