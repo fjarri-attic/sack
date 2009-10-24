@@ -66,9 +66,11 @@ class SearchConditionEdit(QtGui.QPlainTextEdit):
 	def __init__(self, parent):
 		QtGui.QPlainTextEdit.__init__(self, parent)
 
+	searchRequested = QtCore.pyqtSignal(str)
+
 	def keyPressEvent(self, event):
 		if event.key() == QtCore.Qt.Key_Return:
-			print(self.toPlainText())
+			self.searchRequested.emit(self.toPlainText())
 		else:
 			QtGui.QPlainTextEdit.keyPressEvent(self, event)
 
@@ -78,10 +80,14 @@ class SearchWindow(QtGui.QSplitter):
 	def __init__(self, parent, db_model):
 		QtGui.QSplitter.__init__(self, QtCore.Qt.Vertical, parent)
 
-		results_view = SearchResultsView(self)
-		results_view.setModel(models.SearchResultsModel(db_model))
+		search_model = models.SearchResultsModel(self, db_model)
 
+		results_view = SearchResultsView(self)
+		results_view.setModel(search_model)
 		self.addWidget(results_view)
-		self.addWidget(SearchConditionEdit(self))
+
+		condition_edit = SearchConditionEdit(self)
+		condition_edit.searchRequested.connect(search_model.refreshResults)
+		self.addWidget(condition_edit)
 
 		self._db_model = db_model
