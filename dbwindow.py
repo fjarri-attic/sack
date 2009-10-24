@@ -66,6 +66,12 @@ class SearchConditionEdit(QtGui.QPlainTextEdit):
 	def __init__(self, parent):
 		QtGui.QPlainTextEdit.__init__(self, parent)
 
+	def keyPressEvent(self, event):
+		if event.key() == QtCore.Qt.Key_Return:
+			print(self.toPlainText())
+		else:
+			QtGui.QPlainTextEdit.keyPressEvent(self, event)
+
 
 class SearchWindow(QtGui.QSplitter):
 

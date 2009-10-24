@@ -35,11 +35,13 @@ class Preferences(QtGui.QDialog):
 
 		self.setLayout(layout)
 
+	languageChanged = QtCore.pyqtSignal()
+
 	@QtCore.pyqtSlot(int)
 	def _languageChanged(self, index):
 		short_name = self._language.itemData(index)
 		app.settings.setValue('ui/language', short_name)
-		app.inst.reloadTranslator.emit()
+		self.languageChanged.emit()
 
 	def _setCurrentLocaleString(self):
 		"""
@@ -77,4 +79,4 @@ class Preferences(QtGui.QDialog):
 
 		# notify application, that the preferences were closed
 		# (so that it could release pointer to this window)
-		app.inst.closePreferencesWindow.emit()
+		app.inst.closePreferencesWindow()

@@ -40,7 +40,7 @@ class MainMenu(QtGui.QMenuBar):
 		# not translating this name, because on Mac OS it will be automatically
 		# linked to application's standard preferences menu item
 		preferences = QtGui.QAction("&Preferences", self)
-		preferences.triggered.connect(self._showPreferences)
+		preferences.triggered.connect(app.inst.showPreferencesWindow)
 		file.addAction(preferences)
 
 	def _setFileFormatsString(self):
@@ -64,7 +64,4 @@ class MainMenu(QtGui.QMenuBar):
 		filename = func(self, title,
 			self._default_dir, self._file_formats)
 		if filename is not None:
-			app.inst.createDBWindow.emit(filename, new_file)
-
-	def _showPreferences(self):
-		app.inst.showPreferencesWindow.emit()
+			app.inst.createDBWindow(filename, new_file)

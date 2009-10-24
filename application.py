@@ -45,19 +45,12 @@ class Application(QtGui.QApplication):
 		self._db_windows = [] # created DB windows will be stored here
 		self._preferences_window = None
 
-		self.createDBWindow.connect(self._createDBWindow)
-		self.showPreferencesWindow.connect(self._showPreferencesWindow)
-		self.closePreferencesWindow.connect(self._closePreferencesWindow)
-		self.reloadTranslator.connect(self._reloadTranslator)
-
 		# we need menu to stay alive even if all DB windows are closed
 		# (default Mac OS applications behavior)
 		self.setQuitOnLastWindowClosed(False)
 
 		# for debug purposes
-		app.inst.createDBWindow.emit("/Users/bogdan/gitrepos/sack/test.sack", False)
-
-	reloadTranslator = QtCore.pyqtSignal()
+		app.inst.createDBWindow("/Users/bogdan/gitrepos/sack/test.sack", False)
 
 	def _reloadTranslator(self):
 		"""
@@ -104,13 +97,11 @@ class Application(QtGui.QApplication):
 		# if language is set to current locale, and locale has changed -
 		# we need to reload translator
 			if app.settings.value("ui/language") == None:
-				self._reloadTranslator()
+				self.reloadTranslator()
 
 		QtGui.Application.changeEvent(self, e)
 
-	createDBWindow = QtCore.pyqtSignal(str, bool)
-
-	def _createDBWindow(self, filename, new_file):
+	def createDBWindow(self, filename, new_file):
 		"""
 		Create new DB window for given file (if new_file is
 		True, the new file should be created).
@@ -119,9 +110,7 @@ class Application(QtGui.QApplication):
 		self._db_windows.append(wnd)
 		wnd.show()
 
-	showPreferencesWindow = QtCore.pyqtSignal()
-
-	def _showPreferencesWindow(self):
+	def showPreferencesWindow(self):
 		"""Show preferences window (create it if necessary)"""
 
 		if self._preferences_window is None:
@@ -130,10 +119,9 @@ class Application(QtGui.QApplication):
 		self._preferences_window.show()
 		self._preferences_window.raise_()
 		self._preferences_window.activateWindow()
+		self._preferences_window.languageChanged.connect(self._reloadTranslator)
 
-	closePreferencesWindow = QtCore.pyqtSignal()
-
-	def _closePreferencesWindow(self):
+	def closePreferencesWindow(self):
 		"""Preferences were closed, release reference to the window"""
 		self._preferences_window = None
 
