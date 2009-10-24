@@ -17,7 +17,6 @@ _DEFAULT_SETTINGS = {
 	'ui': {
 		'language': None, # user interface language; None = use current locale
 		'language_fallback': 'en_US', # if language file was not found, use this one
-		'object_widget_size': 15 # size of object widget relative to symbol width
 	},
 	'dbwindow': {
 		'width': 600, # starting width of DB window
