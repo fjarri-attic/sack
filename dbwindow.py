@@ -44,7 +44,7 @@ class DBWindow(QtGui.QMainWindow):
 		#self.addDockWidget(QtCore.Qt.LeftDockWidgetArea, tags_dock)
 		#self.addDockWidget(QtCore.Qt.RightDockWidgetArea, shelf_dock)
 
-		self.setCentralWidget(SearchWindow(self._db_model))
+		self.setCentralWidget(SearchWindow(self, self._db_model))
 
 		self.resize(app.settings.value('dbwindow/width'),
 			app.settings.value('dbwindow/height'))
@@ -57,14 +57,21 @@ class DBWindow(QtGui.QMainWindow):
 
 class SearchResultsView(QtGui.QListView):
 
-	def __init__(self):
-		QtGui.QListView.__init__(self)
+	def __init__(self, parent):
+		QtGui.QListView.__init__(self, parent)
+
+
+class SearchConditionEdit(QtGui.QPlainTextEdit):
+
+	def __init__(self, parent):
+		QtGui.QPlainTextEdit.__init__(self, parent)
+
 
 class SearchWindow(QtGui.QSplitter):
 
-	def __init__(self, db_model):
-		QtGui.QSplitter.__init__(self, QtCore.Qt.Vertical)
-		self.addWidget(SearchResultsView())
-		self.addWidget(QtGui.QPlainTextEdit())
+	def __init__(self, parent, db_model):
+		QtGui.QSplitter.__init__(self, QtCore.Qt.Vertical, parent)
+		self.addWidget(SearchResultsView(self))
+		self.addWidget(SearchConditionEdit(self))
 
 		self._db_model = db_model
