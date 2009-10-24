@@ -71,7 +71,11 @@ class SearchWindow(QtGui.QSplitter):
 
 	def __init__(self, parent, db_model):
 		QtGui.QSplitter.__init__(self, QtCore.Qt.Vertical, parent)
-		self.addWidget(SearchResultsView(self))
+
+		results_view = SearchResultsView(self)
+		results_view.setModel(models.SearchResultsModel(db_model))
+
+		self.addWidget(results_view)
 		self.addWidget(SearchConditionEdit(self))
 
 		self._db_model = db_model
