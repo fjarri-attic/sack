@@ -12,25 +12,18 @@ class DatabaseCache:
 		return getattr(self._conn, name)
 
 
-class DatabaseModel(QtCore.QObject):
+class DatabaseModel(QtCore.QAbstractItemModel):
 
 	def __init__(self, file_name, new_file):
+		QtCore.QAbstractItemModel.__init__(self)
 		self._db = DatabaseCache(file_name, new_file)
 
 
-class TagListModel(QtCore.QObject):
+class SearchResultsModel(QtCore.QAbstractListModel):
 
 	def __init__(self, db_model):
-		pass
+		QtCore.QAbstractListModel.__init__(self)
+		self._results = []
 
-
-class ShelfModel(QtCore.QObject):
-
-	def __init__(self, db_model):
-		pass
-
-
-class SearchResultsModel(QtCore.QObject):
-
-	def __init__(self, db_model):
-		pass
+	def rowCount(self, parent):
+		return len(self._results)
