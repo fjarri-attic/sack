@@ -14,11 +14,18 @@ class DatabaseCache:
 		return getattr(self._conn, name)
 
 
-class DatabaseModel(QtCore.QAbstractItemModel):
+class DatabaseModel(QtCore.QObject):
 
 	def __init__(self, file_name, new_file):
-		QtCore.QAbstractItemModel.__init__(self)
+		QtCore.QObject.__init__(self)
 		self._db = DatabaseCache(file_name, new_file)
+
+	def getTitle(self, id):
+		title = self._db.read(id, ['_Title'])
+
+		# TODO: add expandable titles (like "%(Track)-%(Name)")
+
+		return title
 
 	def __getattr__(self, name):
 		return getattr(self._db, name)
@@ -40,7 +47,7 @@ class SearchResultsModel(QtCore.QAbstractListModel):
 		elif index.row() < 0 or index.row() >= len(self._results):
 			return None
 		elif role == QtCore.Qt.DisplayRole:
-			return self._db_model.read(self._results[index.row()], ['name'])
+			return self._db_model.getTitle(self._results[index.row()])
 
 	def refreshResults(self, condition_str):
 		self._condition_str = condition_str
