@@ -16,8 +16,7 @@ class TitleTemplate:
 	_PATTERN = r"""
 	%(delim)s(?:
 		(?P<escaped>%(delim)s) |   # Escape sequence of two delimiters
-		{(?P<braced>[^}]+)}   |   # delimiter and a braced identifier
-		(?P<invalid>)              # Other ill-formed delimiter exprs
+		{(?P<braced>[^}]+)}      # delimiter and a braced identifier
 	)
 	""" % {'delim' : re.escape(_DELIMITER)}
 
@@ -62,10 +61,9 @@ class TitleTemplate:
 				else:
 					return self._DELIMITER + '{' + name + '}'
 
-			if mo.group('escaped') is not None:
-				return self._DELIMITER
-
-			return self._DELIMITER + mo.group('invalid')
+			# regexp could catch either 'braced' or 'escaped' substring
+			# if it is not 'braced', it is 'escaped'
+			return self._DELIMITER
 
 		return self._PATTERN.sub(substituteFunc, self._template)
 
