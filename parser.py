@@ -5,6 +5,71 @@ import brain.op as op
 
 from errors import *
 
+
+class TitleTemplate:
+	"""Class which performs the analysis and processing of object title template"""
+
+	_DELIMITER = '$' # service symbol for template
+
+	# main pattern for finding variables in template:
+	# strings like '$$' and '${something}' are extracted
+	_PATTERN = r"""
+	%(delim)s(?:
+		(?P<escaped>%(delim)s) |   # Escape sequence of two delimiters
+		{(?P<braced>[^}]+)}   |   # delimiter and a braced identifier
+		(?P<invalid>)              # Other ill-formed delimiter exprs
+	)
+	""" % {'delim' : re.escape(_DELIMITER)}
+
+	_PATTERN = re.compile(_PATTERN, re.IGNORECASE | re.VERBOSE)
+
+	def __init__(self, template):
+		self._template = template
+
+	def getFieldNames(self):
+		"""
+		Returns dictionary {field name: field name list} for all field names
+		mentioned in template, so that user could find their values for substitution.
+		"""
+
+		names = {}
+
+		def findValidNames(mo):
+			name = mo.group('braced')
+			if name is None or name in names:
+			# if it is some other group or name was already processed - skip
+				return
+
+			name_list = _getFieldNameList(name)
+			if name_list is None or None in name_list:
+			# if it is not a valid field name, or is not fully defined
+			# (contains list masks) - skip
+				return
+
+			names[name] = name_list
+
+		self._PATTERN.sub(findValidNames, self._template)
+		return names
+
+	def substitute(self, field_values):
+		"""Substitute variables in braces with provided values"""
+
+		def substituteFunc(mo):
+			name = mo.group('braced')
+			if name is not None:
+				if name in field_values:
+					return str(field_values[name])
+				else:
+					return self._DELIMITER + '{' + name + '}'
+
+			if mo.group('escaped') is not None:
+				return self._DELIMITER
+
+			return self._DELIMITER + mo.group('invalid')
+
+		return self._PATTERN.sub(substituteFunc, self._template)
+
+
 class _Token:
 	"""Search condition token"""
 
@@ -289,7 +354,7 @@ def parseSearchCondition(condition):
 	return result
 
 
-class ParserTests(unittest.TestCase):
+class _ParserTests(unittest.TestCase):
 
 	def testTokenizer(self):
 		tests = {
@@ -401,10 +466,39 @@ class ParserTests(unittest.TestCase):
 		for test in tests:
 			self.assertRaises(ParserError, parseSearchCondition, test)
 
+	def testTitleTemplateFindNames(self):
+		"""Check the algorithm of extracting field names from template"""
+
+		tests = {
+			'${abc.def.1}-$abc-${123}': {
+				'abc.def.1': ['abc', 'def', 1],
+				'123': [123]
+			},
+			'${abc..def} $$ ${qwe}': {'qwe': ['qwe']}
+		}
+
+		for test in tests:
+			t = TitleTemplate(test)
+			self.assertEqual(t.getFieldNames(), tests[test])
+
+	def testTitleTemplateSubstitute(self):
+		"""Check the algorithm of substitution"""
+
+		field_values = {'abc': 'ABC', 'a.1': 'VALUE'}
+
+		tests = {
+			'${abc} $$ ${} ${{{} ${abc}': 'ABC $ ${} ${{{} ABC',
+			'$abc ${a.1} $$$$': '$abc VALUE $$'
+		}
+
+		for test in tests:
+			t = TitleTemplate(test)
+			self.assertEqual(t.substitute(field_values), tests[test])
+
 
 def suite():
 	res = unittest.TestSuite()
-	res.addTests(unittest.TestLoader().loadTestsFromTestCase(ParserTests))
+	res.addTests(unittest.TestLoader().loadTestsFromTestCase(_ParserTests))
 	return res
 
 if __name__ == "__main__":

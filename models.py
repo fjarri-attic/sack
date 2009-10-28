@@ -18,67 +18,6 @@ class DatabaseCache:
 		return getattr(self._conn, name)
 
 
-class Template:
-
-	delimiter = '$'
-	idpattern = r'[_a-z][_a-z0-9\.\-]*'
-
-	pattern = r"""
-	%(delim)s(?:
-		(?P<escaped>%(delim)s) |   # Escape sequence of two delimiters
-		(?P<named>%(id)s)      |   # delimiter and a Python identifier
-		{(?P<braced>%(id)s)}   |   # delimiter and a braced identifier
-		(?P<invalid>)              # Other ill-formed delimiter exprs
-	)
-	"""
-
-	pattern = pattern % {
-		'delim' : re.escape(delimiter),
-		'id' : idpattern,
-	}
-
-	pattern = re.compile(pattern, re.IGNORECASE | re.VERBOSE)
-
-	def __init__(self, template):
-		self._template = template
-
-	def getFieldNames(self):
-
-		names = set()
-
-		def convert(mo):
-			named = mo.group('named') or mo.group('braced')
-			if named is not None:
-				names.add(named)
-
-		self.pattern.sub(convert, self._template)
-		return names
-
-	def substitute(self, field_values):
-
-		def convert(mo):
-			named = mo.group('named')
-			if named is not None:
-				if named in field_values:
-					return str(field_values[named])
-				else:
-					return self.delimiter + named
-
-			braced = mo.group('braced')
-			if braced is not None:
-				if braced in field_values:
-					return str(field_values[braced])
-				else:
-					return self.delimiter + '{' + braced + '}'
-
-			if mo.group('escaped') is not None:
-				return self.delimiter
-
-			return self.delimiter + mo.group('invalid')
-
-		return self.pattern.sub(convert, self._template)
-
-
 class DatabaseModel(QtCore.QObject):
 
 	def __init__(self, file_name, new_file):
@@ -138,7 +77,7 @@ class DatabaseModel(QtCore.QObject):
 	def getTitle(self, id):
 		obj_class = self._db.read(id, ['_Class'])
 		title_template = self._db.read(obj_class, ['TitleTemplate'])
-		template_obj = Template(title_template)
+		template_obj = parser.TitleTemplate(title_template)
 
 		field_names = template_obj.getFieldNames()
 		field_values = {}
