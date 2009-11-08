@@ -5,15 +5,15 @@
     <message>
         <location filename="dbwindow.py" line="27"/>
         <source>Tags</source>
-        <translation>Теги</translation>
+        <translation type="obsolete">Теги</translation>
     </message>
     <message>
         <location filename="dbwindow.py" line="29"/>
         <source>Shelf</source>
-        <translation>Полка</translation>
+        <translation type="obsolete">Полка</translation>
     </message>
     <message>
-        <location filename="dbwindow.py" line="41"/>
+        <location filename="dbwindow.py" line="55"/>
         <source>Ready</source>
         <translation>Готов</translation>
     </message>
@@ -21,12 +21,12 @@
 <context>
     <name>Language</name>
     <message>
-        <location filename="globals.py" line="137"/>
+        <location filename="globals.py" line="139"/>
         <source>Full Name</source>
         <translation>Русский (Россия)</translation>
     </message>
     <message>
-        <location filename="globals.py" line="143"/>
+        <location filename="globals.py" line="145"/>
         <source>Short Name</source>
         <translation>ru_RU</translation>
     </message>
@@ -82,7 +82,7 @@
         <translation>Настройки</translation>
     </message>
     <message>
-        <location filename="preferences.py" line="49"/>
+        <location filename="preferences.py" line="51"/>
         <source>Current locale</source>
         <translation>Язык системы</translation>
     </message>
