@@ -74,7 +74,7 @@ class Application(QtGui.QApplication):
 		if lang_from_config not in translations:
 			warning("Translation file for " + lang_from_config +
 				" was not found, falling back")
-			lang_from_config = app.settings('ui/language_fallback')
+			lang_from_config = app.settings.value('ui/language_fallback')
 
 		# load translation file
 		if lang_from_config in translations:
