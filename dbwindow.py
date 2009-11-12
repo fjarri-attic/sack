@@ -61,6 +61,12 @@ class SearchResultsView(QtGui.QListView):
 		QtGui.QListView.__init__(self, parent)
 
 
+class TagsListView(QtGui.QListView):
+
+	def __init__(self, parent):
+		QtGui.QListView.__init__(self, parent)
+
+
 class SearchConditionEdit(QtGui.QPlainTextEdit):
 
 	def __init__(self, parent):
@@ -81,13 +87,18 @@ class SearchWindow(QtGui.QSplitter):
 		QtGui.QSplitter.__init__(self, QtCore.Qt.Vertical, parent)
 
 		search_model = models.SearchResultsModel(self, db_model)
+		tags_model = models.TagsListModel(self, db_model)
 
-		results_view = SearchResultsView(self)
+		splitter = QtGui.QSplitter(QtCore.Qt.Horizontal, self)
+
+		tags_view = TagsListView(self)
+		tags_view.setModel(tags_model)
+		splitter.addWidget(tags_view)
+
+		results_view = SearchResultsView(splitter)
 		results_view.setModel(search_model)
-		self.addWidget(results_view)
+		splitter.addWidget(results_view)
 
-		condition_edit = SearchConditionEdit(self)
+		condition_edit = SearchConditionEdit(splitter)
 		condition_edit.searchRequested.connect(search_model.refreshResults)
 		self.addWidget(condition_edit)
-
-		self._db_model = db_model
