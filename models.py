@@ -118,3 +118,31 @@ class SearchResultsModel(QtCore.QAbstractListModel):
 		condition = parser.parseSearchCondition(condition_str)
 		self._results = self._db_model.search(condition)
 		self.reset()
+
+class TagsListModel(QtCore.QAbstractListModel):
+
+	def __init__(self, parent, db_model):
+		QtCore.QAbstractListModel.__init__(self, parent)
+		self._db_model = db_model
+		self._objects = []
+		self._tags = []
+
+	def rowCount(self, parent):
+		return len(self._tags)
+
+	def data(self, index, role=QtCore.Qt.DisplayRole):
+		if not index.isValid():
+			return None
+		elif index.row() < 0 or index.row() >= len(self._tags):
+			return None
+		elif role == QtCore.Qt.DisplayRole:
+			return self._db_model.getTitle(self._tags[index.row()])
+
+	def refreshTags(self, objects):
+		tags_set = set()
+		self._objects = objects
+		for object in self._objects:
+			tags = self._db_model.read(object, ['_Tags'])
+			for tag in tags:
+				tags_set.add(tag)
+		self._tags = list(tags_set)
