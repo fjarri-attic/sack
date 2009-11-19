@@ -2,6 +2,7 @@ from PyQt4 import QtCore, QtGui
 
 from logging import warning
 import re
+import time
 
 import brain
 import brain.op as op
@@ -101,6 +102,8 @@ class SearchResultsModel(QtCore.QAbstractListModel):
 		QtCore.QAbstractListModel.__init__(self, parent)
 		self._results = []
 		self._db_model = db_model
+		self._search_performed = False
+		self._search_time = -1
 
 	def rowCount(self, parent):
 		return len(self._results)
@@ -116,8 +119,19 @@ class SearchResultsModel(QtCore.QAbstractListModel):
 	def refreshResults(self, condition_str):
 		self._condition_str = condition_str
 		condition = parser.parseSearchCondition(condition_str)
+
+		time_start = time.time()
 		self._results = self._db_model.search(condition)
+		self._search_time = time.time() - time_start
+
+		self._search_performed = True
 		self.reset()
+
+	def searchPerformed(self):
+		return self._search_performed
+
+	def searchTime(self):
+		return self._search_time
 
 class TagsListModel(QtCore.QAbstractListModel):
 
