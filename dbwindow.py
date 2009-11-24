@@ -95,7 +95,7 @@ class SearchWindow(QtGui.QSplitter):
 		QtGui.QSplitter.__init__(self, QtCore.Qt.Horizontal, parent)
 
 		self._search_model = models.SearchResultsModel(self, db_model)
-		tags_model = models.TagsListModel(self, db_model)
+		tags_model = models.TagsListModel(self, db_model, self._search_model)
 
 		splitter = QtGui.QSplitter(QtCore.Qt.Vertical, self)
 

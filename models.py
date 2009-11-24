@@ -120,8 +120,8 @@ class DatabaseModel(QtCore.QObject):
 
 	def getTags(self, objects):
 		tags_set = set()
-		for object in self._objects:
-			tags = self._db_model.read(object, ['_tags'])
+		for object in objects:
+			tags = self.read(object, ['_tags'])
 			for tag in tags:
 				tags_set.add(tag)
 		return list(tags_set)
@@ -150,6 +150,8 @@ class SearchResultsModel(QtCore.QAbstractListModel):
 		elif role == QtCore.Qt.DisplayRole:
 			return self._db_model.getTitle(self._results[index.row()])
 
+	searchFinished = QtCore.pyqtSignal(list)
+
 	def refreshResults(self, condition_str):
 		self._condition_str = condition_str
 		condition = parser.parseSearchCondition(condition_str)
@@ -160,6 +162,7 @@ class SearchResultsModel(QtCore.QAbstractListModel):
 
 		self._search_performed = True
 		self.reset()
+		self.searchFinished.emit(self._results)
 
 	def searchPerformed(self):
 		return self._search_performed
@@ -169,11 +172,12 @@ class SearchResultsModel(QtCore.QAbstractListModel):
 
 class TagsListModel(QtCore.QAbstractListModel):
 
-	def __init__(self, parent, db_model):
+	def __init__(self, parent, db_model, search_results_model):
 		QtCore.QAbstractListModel.__init__(self, parent)
 		self._db_model = db_model
 		self._objects = []
 		self._tags = []
+		search_results_model.searchFinished.connect(self.refreshTags)
 
 	def rowCount(self, parent):
 		return len(self._tags)
@@ -189,3 +193,4 @@ class TagsListModel(QtCore.QAbstractListModel):
 	def refreshTags(self, objects):
 		self._objects = objects
 		self._tags = self._db_model.getTags(objects)
+		self.reset()
