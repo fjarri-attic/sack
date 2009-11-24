@@ -10,21 +10,13 @@ import brain.op as op
 
 import parser
 
-class DatabaseCache:
-
-	def __init__(self, file_name, new_file):
-		self._conn = brain.connect(None, file_name,
-			open_existing=(0 if new_file else 1))
-
-	def __getattr__(self, name):
-		return getattr(self._conn, name)
-
 
 class DatabaseModel(QtCore.QObject):
 
 	def __init__(self, file_name, new_file):
 		QtCore.QObject.__init__(self)
-		self._db = DatabaseCache(file_name, new_file)
+		self._conn = brain.connect(None, file_name, open_existing=(0 if new_file else 1))
+		self._db = brain.CachedConnection(self._conn)
 
 		# for debug purposes
 		objs = self._db.search()
