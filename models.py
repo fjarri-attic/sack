@@ -1,5 +1,6 @@
 from PyQt4 import QtCore, QtGui
 
+import copy
 from logging import warning
 import re
 import time
@@ -25,59 +26,92 @@ class DatabaseModel(QtCore.QObject):
 		QtCore.QObject.__init__(self)
 		self._db = DatabaseCache(file_name, new_file)
 
+		# for debug purposes
+		objs = self._db.search()
+		for obj in objs:
+			self._db.delete(obj)
+
 		self._findRoot()
+		self._testInit() # for debug purposes
+
+	def _testInit(self):
+
+		friends = self.createTag('Friends')
+		coworkers = self.createTag('Coworkers')
+		enemies = self.createTag('Enemies')
+
+		human = self.createClass('Human', template='${name}', fields=['name', 'age'])
+
+		self.createObject({'name': 'Alex', 'age': 20}, tags=[friends], cls=human)
+		self.createObject({'name': 'Bob', 'age': 22}, tags=[coworkers, friends], cls=human)
+		self.createObject({'name': 'Carl'}, tags=[enemies], cls=human)
+		self.createObject({'name': 'Dick', 'age': 23}, tags=[coworkers, enemies], cls=human)
+
+	def createObject(self, data, tags=None, cls=None):
+		to_add = copy.deepcopy(data)
+
+		to_add['_class'] = self._default_class if cls is None else cls
+		to_add['_tags'] = [] if tags is None else tags
+
+		return self._db.create(to_add)
+
+	def createClass(self, name, template=None, fields=None):
+		to_add = {'name': name, 'title_template': '${name}' if template is None else template}
+		if fields is not None:
+			to_add['fields_order'] = fields
+		return self.createObject(to_add, cls=self._class_class)
+
+	def _createMetaclass(self):
+		self._default_class = None # stub for createObject()
+		self._class_class = None # stub for createClass()
+		self._class_class = self.createClass('Metaclass',
+			fields=['name', 'title_template', 'fields_order'])
+		self.setClass(self._class_class, self._class_class)
+
+	def setClass(self, obj, cls):
+		self._db.modify(obj, ['_class'], cls)
+
+	def createTag(self, name, description=None):
+		to_add = {'name': name}
+		if description is not None:
+			to_add['description'] = description
+		return self.createObject(to_add, cls=self._tag_class)
 
 	def _findRoot(self):
 
 		# Search for root object - it is the starting point for
 		# accessing the database
-		result = self._db.search(['_Class'], op.EQ, None)
+		result = self._db.search(['_class'], op.EQ, None)
 
 		if result == []:
 
-			self._class_class = self._db.create({
-				'Name': 'Metaclass',
-				'TitleTemplate': '$Name',
-				'FieldsOrder': ['Name', 'TitleTemplate', 'FieldsOrder']
-			})
-			self._db.modify(self._class_class, ['_Class'], self._class_class)
+			self._createMetaclass()
+			self._tag_class = self.createClass('Tag class', fields=['name', 'description'])
+			self._default_class = self.createClass('Default class',
+				template='${title}', fields=['title', 'data'])
 
-			self._tag_class = self._db.create({
-				'Name': 'Tag class',
-				'TitleTemplate': '$Name',
-				'_Class': self._class_class,
-				'FieldsOrder': ['Name', 'Description']
-			})
-
-			self._default_class = self._db.create({
-				'Name': 'Default class',
-				'TitleTemplate': '$Title',
-				'_Class': self._class_class,
-				'FieldsOrder': ['Title', 'Data']
-			})
-
-			self._root = self._db.create({
-				'_Tags': [],
-				'_Class': None,
-				'BuiltinClasses': {
-					'Class': self._class_class,
-					'Tag': self._tag_class,
-					'Default': self._default_class
+			self._root = self.createObject({
+				'builtin_classes': {
+					'class': self._class_class,
+					'tag': self._tag_class,
+					'default': self._default_class
 				}
 			})
+			self.setClass(self._root, None)
+
 		else:
 			if len(result) > 1:
 				warning("More than one root object found (" +
 					repr(result) + "), using the first one")
 			self._root = result[0]
 
-			self._class_class = self._db.read(self._root, ['BuiltinClasses', 'Class'])
-			self._tag_class = self._db.read(self._root, ['BuiltinClasses', 'Tag'])
-			self._default_class = self._db.read(self._root, ['BuiltinClasses', 'Default'])
+			self._class_class = self._db.read(self._root, ['builtinClasses', 'class'])
+			self._tag_class = self._db.read(self._root, ['builtinClasses', 'tag'])
+			self._default_class = self._db.read(self._root, ['builtinClasses', 'default'])
 
 	def getTitle(self, id):
-		obj_class = self._db.read(id, ['_Class'])
-		title_template = self._db.read(obj_class, ['TitleTemplate'])
+		obj_class = self._db.read(id, ['_class'])
+		title_template = self._db.read(obj_class, ['title_template'])
 		template_obj = parser.TitleTemplate(title_template)
 
 		field_names = template_obj.getFieldNames()
@@ -91,6 +125,14 @@ class DatabaseModel(QtCore.QObject):
 			field_values[name] = value
 
 		return template_obj.substitute(field_values)
+
+	def getTags(self, objects):
+		tags_set = set()
+		for object in self._objects:
+			tags = self._db_model.read(object, ['_tags'])
+			for tag in tags:
+				tags_set.add(tag)
+		return list(tags_set)
 
 	def __getattr__(self, name):
 		return getattr(self._db, name)
@@ -153,10 +195,5 @@ class TagsListModel(QtCore.QAbstractListModel):
 			return self._db_model.getTitle(self._tags[index.row()])
 
 	def refreshTags(self, objects):
-		tags_set = set()
 		self._objects = objects
-		for object in self._objects:
-			tags = self._db_model.read(object, ['_Tags'])
-			for tag in tags:
-				tags_set.add(tag)
-		self._tags = list(tags_set)
+		self._tags = self._db_model.getTags(objects)
