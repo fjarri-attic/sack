@@ -6,7 +6,7 @@ from logging import warning, error
 
 from PyQt4 import QtGui, QtCore
 
-import dbwindow
+import window_db
 from globals import *
 import mainmenu
 import preferences
@@ -106,7 +106,7 @@ class Application(QtGui.QApplication):
 		Create new DB window for given file (if new_file is
 		True, the new file should be created).
 		"""
-		wnd = dbwindow.DBWindow(filename, new_file)
+		wnd = window_db.DBWindow(filename, new_file)
 		self._db_windows.append(wnd)
 		wnd.show()
 
