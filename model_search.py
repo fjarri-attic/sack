@@ -66,6 +66,7 @@ class TagsListModel(QtCore.QAbstractListModel):
 		self._db_model = db_model
 		self._objects = []
 		self._tags = []
+		self._selected = set()
 		self.selectionChanged.connect(self._processSelection)
 
 	def rowCount(self, parent):
@@ -88,10 +89,11 @@ class TagsListModel(QtCore.QAbstractListModel):
 	filterChanged = QtCore.pyqtSignal(list)
 
 	def _processSelection(self, selected, unselected):
-		tags = []
 		for index in selected.indexes():
-			tags.append(self._tags[index.row()])
-		self.filterChanged.emit(tags)
+			self._selected.add(self._tags[index.row()])
+		for index in unselected.indexes():
+			self._selected.remove(self._tags[index.row()])
+		self.filterChanged.emit(self._selected)
 
 def generateModels(parent, db_model):
 	results_model = ResultsModel(parent, db_model)
