@@ -69,6 +69,7 @@ class TagsListView(QtGui.QListView):
 		QtGui.QListView.__init__(self, parent)
 		self.setModel(model)
 		self.selectionModel().selectionChanged.connect(model.selectionChanged)
+		self.setSelectionMode(QtGui.QAbstractItemView.MultiSelection)
 
 
 class SearchConditionEdit(QtGui.QPlainTextEdit):
