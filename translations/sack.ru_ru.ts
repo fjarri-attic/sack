@@ -13,7 +13,7 @@
         <translation type="obsolete">Полка</translation>
     </message>
     <message>
-        <location filename="dbwindow.py" line="55"/>
+        <location filename="dbwindow.py" line="56"/>
         <source>Ready</source>
         <translation>Готов</translation>
     </message>
@@ -90,6 +90,45 @@
         <location filename="preferences.py" line="21"/>
         <source>Language</source>
         <translation>Язык</translation>
+    </message>
+</context>
+<context>
+    <name>ResultsHeader</name>
+    <message>
+        <location filename="dbwindow.py" line="130"/>
+        <source>sec</source>
+        <translation>сек</translation>
+    </message>
+    <message numerus="yes">
+        <location filename="dbwindow.py" line="131"/>
+        <source>%n total</source>
+        <translation>
+            <numerusform>всего %n</numerusform>
+            <numerusform>всего %n</numerusform>
+            <numerusform>всего %n</numerusform>
+        </translation>
+    </message>
+    <message>
+        <location filename="dbwindow.py" line="142"/>
+        <source>Search results</source>
+        <translation>Результаты поиска</translation>
+    </message>
+    <message numerus="yes">
+        <location filename="dbwindow.py" line="128"/>
+        <source>%n result(s)</source>
+        <translation>
+            <numerusform>%n объект</numerusform>
+            <numerusform>%n объекта</numerusform>
+            <numerusform>%n объектов</numerusform>
+        </translation>
+    </message>
+</context>
+<context>
+    <name>SearchWindow</name>
+    <message>
+        <location filename="dbwindow.py" line="158"/>
+        <source>Tags</source>
+        <translation>Теги</translation>
     </message>
 </context>
 </TS>

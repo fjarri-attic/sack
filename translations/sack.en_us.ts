@@ -3,7 +3,7 @@
 <context>
     <name>DBWindow</name>
     <message>
-        <location filename="dbwindow.py" line="55"/>
+        <location filename="dbwindow.py" line="56"/>
         <source>Ready</source>
         <translation></translation>
     </message>
@@ -74,6 +74,43 @@
     <message>
         <location filename="preferences.py" line="21"/>
         <source>Language</source>
+        <translation></translation>
+    </message>
+</context>
+<context>
+    <name>ResultsHeader</name>
+    <message>
+        <location filename="dbwindow.py" line="130"/>
+        <source>sec</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="dbwindow.py" line="142"/>
+        <source>Search results</source>
+        <translation></translation>
+    </message>
+    <message numerus="yes">
+        <location filename="dbwindow.py" line="128"/>
+        <source>%n result(s)</source>
+        <translation>
+            <numerusform>%n result</numerusform>
+            <numerusform>%n results</numerusform>
+        </translation>
+    </message>
+    <message numerus="yes">
+        <location filename="dbwindow.py" line="131"/>
+        <source>%n total</source>
+        <translation>
+            <numerusform></numerusform>
+            <numerusform></numerusform>
+        </translation>
+    </message>
+</context>
+<context>
+    <name>SearchWindow</name>
+    <message>
+        <location filename="dbwindow.py" line="158"/>
+        <source>Tags</source>
         <translation></translation>
     </message>
 </context>

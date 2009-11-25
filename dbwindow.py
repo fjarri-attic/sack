@@ -123,19 +123,20 @@ class ResultsHeader(QtGui.QLabel):
 		self._refreshHeader()
 
 	def _refreshHeader(self):
-		results = app.translate("ResultsHeader", "results")
-		sec = app.translate("ResultsHeader", "sec")
-		total = app.translate("ResultsHeader", "total")
 
 		if self._search_performed:
-			self.setText(("{count} {results}" +
-				(" ({tot_count} {total})" if self._results_filtered else "") +
+			results = app.translate("ResultsHeader", "%n result(s)", None,
+				QtCore.QCoreApplication.CodecForTr, self._filtered_results_num)
+			sec = app.translate("ResultsHeader", "sec")
+			total = app.translate("ResultsHeader", "%n total", None,
+				QtCore.QCoreApplication.CodecForTr, self._results_num)
+
+			self.setText(("{results}" +
+				(" ({total})" if self._results_filtered else "") +
 				", {time} {sec}").format(
-				count=self._filtered_results_num,
 				results=results,
 				time=self._search_time,
 				sec=sec,
-				tot_count=self._results_num,
 				total=total))
 		else:
 			self.setText(app.translate("ResultsHeader", "Search results"))
