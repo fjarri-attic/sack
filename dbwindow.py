@@ -7,7 +7,8 @@ from PyQt4 import QtGui, QtCore
 import brain
 
 from globals import *
-import models
+import model_db
+import model_search
 
 
 @dynamically_translated
@@ -17,7 +18,7 @@ class DBWindow(QtGui.QMainWindow):
 		QtGui.QMainWindow.__init__(self)
 
 		self.setWindowTitle(file_name)
-		self._db_model = models.DatabaseModel(file_name, new_file)
+		self._db_model = model_db.DatabaseModel(file_name, new_file)
 
 		#tabbar = QtGui.QTabWidget()
 
@@ -57,14 +58,17 @@ class DBWindow(QtGui.QMainWindow):
 
 class SearchResultsView(QtGui.QListView):
 
-	def __init__(self, parent=None):
+	def __init__(self, model, parent=None):
 		QtGui.QListView.__init__(self, parent)
+		self.setModel(model)
 
 
 class TagsListView(QtGui.QListView):
 
-	def __init__(self, parent=None):
+	def __init__(self, model, parent=None):
 		QtGui.QListView.__init__(self, parent)
+		self.setModel(model)
+		self.selectionModel().selectionChanged.connect(model.selectionChanged)
 
 
 class SearchConditionEdit(QtGui.QPlainTextEdit):
@@ -89,14 +93,41 @@ class SearchConditionEdit(QtGui.QPlainTextEdit):
 
 
 @dynamically_translated
+class ResultsHeader(QtGui.QLabel):
+
+	def __init__(self, results_model, parent=None):
+		QtGui.QLabel.__init__(self, parent)
+		self._search_performed = False
+		self.dynTr(self._refreshHeader).refresh()
+		results_model.searchFinished.connect(self._refreshSearchInfo)
+
+	def _refreshSearchInfo(self, results, search_time):
+		self._results_num = len(results)
+		self._search_performed = True
+		self._search_time = search_time
+		self._refreshHeader()
+
+	def _refreshHeader(self):
+		results = app.translate("ResultsHeader", "results")
+		sec = app.translate("ResultsHeader", "sec")
+
+		if self._search_performed:
+			self.setText("{count} {results}, {time} {sec}".format(
+				count=self._results_num,
+				results=results,
+				time=self._search_time,
+				sec=sec))
+		else:
+			self.setText(app.translate("ResultsHeader", "Search results"))
+
+
+@dynamically_translated
 class SearchWindow(QtGui.QSplitter):
 
 	def __init__(self, parent, db_model):
 		QtGui.QSplitter.__init__(self, QtCore.Qt.Horizontal, parent)
 
-		self._search_model = models.SearchResultsModel(self, db_model)
-		tags_model = models.TagsListModel(self, db_model, self._search_model)
-		tags_model.filterChanged.connect(self._search_model.filterResults)
+		results_model, tags_model = model_search.generateModels(self, db_model)
 
 		splitter = QtGui.QSplitter(QtCore.Qt.Vertical, self)
 
@@ -104,9 +135,7 @@ class SearchWindow(QtGui.QSplitter):
 		tags_widget = QtGui.QWidget(self)
 		tags_header = QtGui.QLabel()
 		self.dynTr(tags_header.setText).translate('SearchWindow', 'Tags')
-		tags_view = TagsListView()
-		tags_view.setModel(tags_model)
-		tags_view.selectionModel().selectionChanged.connect(tags_model.selectionChanged)
+		tags_view = TagsListView(tags_model)
 		tags_layout = QtGui.QVBoxLayout()
 		tags_layout.addWidget(tags_header)
 		tags_layout.addWidget(tags_view)
@@ -116,21 +145,19 @@ class SearchWindow(QtGui.QSplitter):
 
 		# create results view panel
 		results_widget = QtGui.QWidget(self)
-		self._results_header = QtGui.QLabel()
-		self.dynTr(self._setResultsHeader).refresh()
-		results_view = SearchResultsView()
-		results_view.setModel(self._search_model)
+		results_header = ResultsHeader(results_model)
+		results_view = SearchResultsView(results_model)
 		results_layout = QtGui.QVBoxLayout()
-		results_layout.addWidget(self._results_header)
+		results_layout.addWidget(results_header)
 		results_layout.addWidget(results_view)
 		results_widget.setLayout(results_layout)
 
 		# create search edit panel
 		edit_widget = QtGui.QWidget(self)
 		condition_edit = SearchConditionEdit()
-		condition_edit.searchRequested.connect(self._search_model.refreshResults)
+		condition_edit.searchRequested.connect(results_model.refreshResults)
 		search_button = QtGui.QPushButton(">>")
-		search_button.clicked.connect(self._search_model.refreshResults)
+		search_button.clicked.connect(results_model.refreshResults)
 		edit_layout = QtGui.QHBoxLayout()
 		edit_layout.addWidget(condition_edit)
 		edit_layout.addWidget(search_button)
@@ -140,16 +167,3 @@ class SearchWindow(QtGui.QSplitter):
 		splitter.addWidget(edit_widget)
 
 		self.addWidget(splitter)
-
-	def _setResultsHeader(self):
-		results = app.translate("SearchWindow", "results")
-		sec = app.translate("SearchWindow", "sec")
-
-		if self._search_model.searchPerformed():
-			self._results_header.setText("{count} {results}, {time} {sec}".format(
-				count=self._search_model.rowCount(),
-				results=results,
-				time=self._search_model.searchTime(),
-				sec=sec))
-		else:
-			self._results_header.setText(app.translate("SearchWindow", "Search results"))

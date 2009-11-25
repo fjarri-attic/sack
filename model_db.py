@@ -1,15 +1,12 @@
-from PyQt4 import QtCore, QtGui
+from PyQt4 import QtCore
 
 import copy
 from logging import warning
-import re
-import time
 
 import brain
 import brain.op as op
 
 import parser
-
 
 class DatabaseModel(QtCore.QObject):
 
@@ -128,97 +125,3 @@ class DatabaseModel(QtCore.QObject):
 
 	def __getattr__(self, name):
 		return getattr(self._db, name)
-
-
-class SearchResultsModel(QtCore.QAbstractListModel):
-
-	def __init__(self, parent, db_model):
-		QtCore.QAbstractListModel.__init__(self, parent)
-		self._results = []
-		self._filtered_results = []
-		self._db_model = db_model
-		self._search_performed = False
-		self._search_time = -1
-
-	def rowCount(self, parent):
-		return len(self._filtered_results)
-
-	def data(self, index, role=QtCore.Qt.DisplayRole):
-		if not index.isValid():
-			return None
-		elif index.row() < 0 or index.row() >= len(self._filtered_results):
-			return None
-		elif role == QtCore.Qt.DisplayRole:
-			return self._db_model.getTitle(self._filtered_results[index.row()])
-
-	searchFinished = QtCore.pyqtSignal(list)
-
-	def refreshResults(self, condition_str):
-		self._condition_str = condition_str
-		condition = parser.parseSearchCondition(condition_str)
-
-		time_start = time.time()
-		self._results = self._db_model.search(condition)
-		self._filtered_results = self._results
-		self._search_time = time.time() - time_start
-
-		self._search_performed = True
-		self.reset()
-		self.searchFinished.emit(self._results)
-
-	def filterResults(self, tags):
-		self._filtered_results = []
-		for obj in self._results:
-			obj_tags = self._db_model.getTags([obj])
-
-			match = True
-			for tag in tags:
-				if tag not in obj_tags:
-					match = False
-					break
-
-			if match:
-				self._filtered_results.append(obj)
-
-		self.reset()
-
-	def searchPerformed(self):
-		return self._search_performed
-
-	def searchTime(self):
-		return self._search_time
-
-class TagsListModel(QtCore.QAbstractListModel):
-
-	def __init__(self, parent, db_model, search_results_model):
-		QtCore.QAbstractListModel.__init__(self, parent)
-		self._db_model = db_model
-		self._objects = []
-		self._tags = []
-		search_results_model.searchFinished.connect(self.refreshTags)
-		self.selectionChanged.connect(self._processSelection)
-
-	def rowCount(self, parent):
-		return len(self._tags)
-
-	def data(self, index, role=QtCore.Qt.DisplayRole):
-		if not index.isValid():
-			return None
-		elif index.row() < 0 or index.row() >= len(self._tags):
-			return None
-		elif role == QtCore.Qt.DisplayRole:
-			return self._db_model.getTitle(self._tags[index.row()])
-
-	def refreshTags(self, objects):
-		self._objects = objects
-		self._tags = self._db_model.getTags(objects)
-		self.reset()
-
-	selectionChanged = QtCore.pyqtSignal(QtGui.QItemSelection, QtGui.QItemSelection)
-	filterChanged = QtCore.pyqtSignal(list)
-
-	def _processSelection(self, selected, unselected):
-		tags = []
-		for index in selected.indexes():
-			tags.append(self._tags[index.row()])
-		self.filterChanged.emit(tags)
