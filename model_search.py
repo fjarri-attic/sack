@@ -5,6 +5,7 @@ import time
 
 import parser
 
+
 class ResultsModel(QtCore.QAbstractListModel):
 
 	def __init__(self, parent, db_model):
@@ -38,6 +39,8 @@ class ResultsModel(QtCore.QAbstractListModel):
 		self.reset()
 		self.searchFinished.emit(self._results, search_time)
 
+	resultsFiltered = QtCore.pyqtSignal(list)
+
 	def filterResults(self, tags):
 		self._filtered_results = []
 		for obj in self._results:
@@ -53,6 +56,7 @@ class ResultsModel(QtCore.QAbstractListModel):
 				self._filtered_results.append(obj)
 
 		self.reset()
+		self.resultsFiltered.emit(self._filtered_results)
 
 
 class TagsListModel(QtCore.QAbstractListModel):

@@ -103,23 +103,39 @@ class ResultsHeader(QtGui.QLabel):
 		self._search_performed = False
 		self.dynTr(self._refreshHeader).refresh()
 		results_model.searchFinished.connect(self._refreshSearchInfo)
+		results_model.resultsFiltered.connect(self._refreshFilteringInfo)
 
 	def _refreshSearchInfo(self, results, search_time):
 		self._results_num = len(results)
+		self._filtered_results_num = self._results_num
 		self._search_performed = True
+		self._results_filtered = False
 		self._search_time = search_time
+		self._refreshHeader()
+
+	def _refreshFilteringInfo(self, filtered_results):
+		self._filtered_results_num = len(filtered_results)
+		if(self._filtered_results_num == self._results_num):
+			self._results_filtered = False
+		else:
+			self._results_filtered = True
 		self._refreshHeader()
 
 	def _refreshHeader(self):
 		results = app.translate("ResultsHeader", "results")
 		sec = app.translate("ResultsHeader", "sec")
+		total = app.translate("ResultsHeader", "total")
 
 		if self._search_performed:
-			self.setText("{count} {results}, {time} {sec}".format(
-				count=self._results_num,
+			self.setText(("{count} {results}" +
+				(" ({tot_count} {total})" if self._results_filtered else "") +
+				", {time} {sec}").format(
+				count=self._filtered_results_num,
 				results=results,
 				time=self._search_time,
-				sec=sec))
+				sec=sec,
+				tot_count=self._results_num,
+				total=total))
 		else:
 			self.setText(app.translate("ResultsHeader", "Search results"))
 
