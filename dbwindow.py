@@ -96,6 +96,7 @@ class SearchWindow(QtGui.QSplitter):
 
 		self._search_model = models.SearchResultsModel(self, db_model)
 		tags_model = models.TagsListModel(self, db_model, self._search_model)
+		tags_model.filterChanged.connect(self._search_model.filterResults)
 
 		splitter = QtGui.QSplitter(QtCore.Qt.Vertical, self)
 
@@ -105,6 +106,7 @@ class SearchWindow(QtGui.QSplitter):
 		self.dynTr(tags_header.setText).translate('SearchWindow', 'Tags')
 		tags_view = TagsListView()
 		tags_view.setModel(tags_model)
+		tags_view.selectionModel().selectionChanged.connect(tags_model.selectionChanged)
 		tags_layout = QtGui.QVBoxLayout()
 		tags_layout.addWidget(tags_header)
 		tags_layout.addWidget(tags_view)
