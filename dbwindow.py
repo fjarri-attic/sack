@@ -85,6 +85,9 @@ class SearchConditionEdit(QtGui.QPlainTextEdit):
 
 	searchRequested = QtCore.pyqtSignal(str)
 
+	def onButtonClick(self, _):
+		self.searchRequested.emit(self.toPlainText())
+
 	def keyPressEvent(self, event):
 		if event.key() == QtCore.Qt.Key_Return:
 			self.searchRequested.emit(self.toPlainText())
@@ -157,7 +160,7 @@ class SearchWindow(QtGui.QSplitter):
 		condition_edit = SearchConditionEdit()
 		condition_edit.searchRequested.connect(results_model.refreshResults)
 		search_button = QtGui.QPushButton(">>")
-		search_button.clicked.connect(results_model.refreshResults)
+		search_button.clicked.connect(condition_edit.onButtonClick)
 		edit_layout = QtGui.QHBoxLayout()
 		edit_layout.addWidget(condition_edit)
 		edit_layout.addWidget(search_button)
