@@ -17,13 +17,14 @@ class DBWindow(QtGui.QMainWindow):
 		self.setWindowTitle(file_name)
 		self._db_model = model_db.DatabaseModel(file_name, new_file)
 
-		self.setMenuBar(menus.WindowMenu())
+		self._initMenu()
 
-		tabbar = QtGui.QTabWidget()
+		self._tabbar = QtGui.QTabWidget()
 
-		tabbar.setTabsClosable(True)
-		tabbar.setUsesScrollButtons(True)
-		tabbar.setMovable(True)
+		self._tabbar.setTabsClosable(True)
+		self._tabbar.setUsesScrollButtons(True)
+		self._tabbar.setMovable(True)
+		self.setCentralWidget(self._tabbar)
 
 		#tabbar.addTab(SearchWindow(), 'first')
 		#tabbar.addTab(QtGui.QWidget(), 'second')
@@ -45,8 +46,9 @@ class DBWindow(QtGui.QMainWindow):
 		#self.addDockWidget(QtCore.Qt.RightDockWidgetArea, shelf_dock)
 
 		#self.setCentralWidget(SearchWindow(self, self._db_model))
-		tabbar.addTab(window_search.SearchWindow(self, self._db_model), 'first')
-		self.setCentralWidget(tabbar)
+
+		self._tabs = {}
+		self._createSearchTab()
 
 		self.resize(app.settings.value('dbwindow/width'),
 			app.settings.value('dbwindow/height'))
@@ -55,3 +57,19 @@ class DBWindow(QtGui.QMainWindow):
 
 	def _setStatusBar(self):
 		self.statusBar().showMessage(app.translate('DBWindow', 'Ready'))
+
+	def _initMenu(self):
+		menu = menus.WindowMenu()
+		self.setMenuBar(menu)
+
+		menu.searchTabRequested.connect(self._createSearchTab)
+
+	def _createSearchTab(self):
+		new_tab = window_search.SearchWindow(self, self._db_model)
+		new_index = self._tabbar.addTab(new_tab, new_tab.title())
+		self._tabs[new_tab] = new_index
+		new_tab.titleChanged.connect(lambda new_title: self._refreshTabTitle(new_tab, new_title))
+
+	def _refreshTabTitle(self, tab, title):
+		tab_index = self._tabs[tab]
+		self._tabbar.setTabText(tab_index, title)

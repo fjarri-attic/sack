@@ -49,10 +49,12 @@ class SearchConditionEdit(QtGui.QPlainTextEdit):
 @dynamically_translated
 class ResultsHeader(QtGui.QLabel):
 
+	titleChanged = QtCore.pyqtSignal()
+
 	def __init__(self, results_model, parent=None):
 		QtGui.QLabel.__init__(self, parent)
 		self._search_performed = False
-		self.dynTr(self._refreshHeader).refresh()
+		self.dynTr(self._refreshTitle).refresh()
 		results_model.searchFinished.connect(self._refreshSearchInfo)
 		results_model.resultsFiltered.connect(self._refreshFilteringInfo)
 
@@ -62,7 +64,7 @@ class ResultsHeader(QtGui.QLabel):
 		self._search_performed = True
 		self._results_filtered = False
 		self._search_time = search_time
-		self._refreshHeader()
+		self._refreshTitle()
 
 	def _refreshFilteringInfo(self, filtered_results):
 		self._filtered_results_num = len(filtered_results)
@@ -70,10 +72,16 @@ class ResultsHeader(QtGui.QLabel):
 			self._results_filtered = False
 		else:
 			self._results_filtered = True
-		self._refreshHeader()
+		self._refreshTitle()
 
-	def _refreshHeader(self):
+	def shortTitle(self):
+		if self._search_performed:
+			return app.translate("ResultsHeader", "%n result(s)", None,
+				QtCore.QCoreApplication.CodecForTr, self._results_num)
+		else:
+			return app.translate("ResultsHeader", "Search")
 
+	def longTitle(self):
 		if self._search_performed:
 			results = app.translate("ResultsHeader", "%n result(s)", None,
 				QtCore.QCoreApplication.CodecForTr, self._filtered_results_num)
@@ -81,19 +89,25 @@ class ResultsHeader(QtGui.QLabel):
 			total = app.translate("ResultsHeader", "%n total", None,
 				QtCore.QCoreApplication.CodecForTr, self._results_num)
 
-			self.setText(("{results}" +
+			return ("{results}" +
 				(" ({total})" if self._results_filtered else "") +
 				", {time} {sec}").format(
 				results=results,
 				time=self._search_time,
 				sec=sec,
-				total=total))
+				total=total)
 		else:
-			self.setText(app.translate("ResultsHeader", "Search results"))
+			return app.translate("ResultsHeader", "Search results")
+
+	def _refreshTitle(self):
+		self.setText(self.longTitle())
+		self.titleChanged.emit()
 
 
 @dynamically_translated
 class SearchWindow(QtGui.QSplitter):
+
+	titleChanged = QtCore.pyqtSignal(str)
 
 	def __init__(self, parent, db_model):
 		QtGui.QSplitter.__init__(self, QtCore.Qt.Horizontal, parent)
@@ -116,10 +130,12 @@ class SearchWindow(QtGui.QSplitter):
 
 		# create results view panel
 		results_widget = QtGui.QWidget(self)
-		results_header = ResultsHeader(results_model)
+		self._results_header = ResultsHeader(results_model)
+		self._results_header.titleChanged.connect(
+			lambda: self.titleChanged.emit(self.title()))
 		results_view = SearchResultsView(results_model)
 		results_layout = QtGui.QVBoxLayout()
-		results_layout.addWidget(results_header)
+		results_layout.addWidget(self._results_header)
 		results_layout.addWidget(results_view)
 		results_widget.setLayout(results_layout)
 
@@ -138,3 +154,6 @@ class SearchWindow(QtGui.QSplitter):
 		splitter.addWidget(edit_widget)
 
 		self.addWidget(splitter)
+
+	def title(self):
+		return self._results_header.shortTitle()
