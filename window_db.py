@@ -3,6 +3,7 @@ from PyQt4 import QtGui, QtCore
 import brain
 
 from globals import *
+import menus
 import model_db
 import window_search
 
@@ -15,6 +16,8 @@ class DBWindow(QtGui.QMainWindow):
 
 		self.setWindowTitle(file_name)
 		self._db_model = model_db.DatabaseModel(file_name, new_file)
+
+		self.setMenuBar(menus.WindowMenu())
 
 		tabbar = QtGui.QTabWidget()
 

@@ -39,6 +39,7 @@ class MainMenu(QtGui.QMenuBar):
 
 		# not translating this name, because on Mac OS it will be automatically
 		# linked to application's standard preferences menu item
+		# TODO: translate this for non-Macs
 		preferences = QtGui.QAction("&Preferences", self)
 		preferences.triggered.connect(app.inst.showPreferencesWindow)
 		file.addAction(preferences)
@@ -65,3 +66,20 @@ class MainMenu(QtGui.QMenuBar):
 			self._default_dir, self._file_formats)
 		if filename is not None:
 			app.inst.createDBWindow(filename, new_file)
+
+
+class WindowMenu(MainMenu):
+
+	def __init__(self):
+		MainMenu.__init__(self)
+
+		actions = self.addMenu("")
+		self.dynTr(actions.setTitle).translate("MainMenu", "&Actions")
+
+		action_search = QtGui.QAction(self)
+		self.dynTr(action_search.setText).translate("MainMenu", "&Search")
+		action_search.triggered.connect(self._createSearchTab)
+		actions.addAction(action_search)
+
+	def _createSearchTab(self):
+		pass

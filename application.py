@@ -8,7 +8,7 @@ from PyQt4 import QtGui, QtCore
 
 import window_db
 from globals import *
-import mainmenu
+import menus
 import preferences
 
 
@@ -39,8 +39,9 @@ class Application(QtGui.QApplication):
 		self._translator = None
 		self._reloadTranslator()
 
-		# on Mac OS menu is global for all windows
-		self._main_menu = mainmenu.MainMenu()
+		# global menu for Mac OS
+		# TODO: check what happens here for non-Macs
+		self._main_menu = menus.MainMenu()
 
 		self._db_windows = [] # created DB windows will be stored here
 		self._preferences_window = None
