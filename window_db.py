@@ -24,6 +24,7 @@ class DBWindow(QtGui.QMainWindow):
 		self._tabbar.setTabsClosable(True)
 		self._tabbar.setUsesScrollButtons(True)
 		self._tabbar.setMovable(True)
+		self._tabbar.tabCloseRequested.connect(self._closeTab)
 		self.setCentralWidget(self._tabbar)
 
 		#tabbar.addTab(SearchWindow(), 'first')
@@ -47,7 +48,6 @@ class DBWindow(QtGui.QMainWindow):
 
 		#self.setCentralWidget(SearchWindow(self, self._db_model))
 
-		self._tabs = {}
 		self._createSearchTab()
 
 		self.resize(app.settings.value('dbwindow/width'),
@@ -67,9 +67,11 @@ class DBWindow(QtGui.QMainWindow):
 	def _createSearchTab(self):
 		new_tab = window_search.SearchWindow(self, self._db_model)
 		new_index = self._tabbar.addTab(new_tab, new_tab.title())
-		self._tabs[new_tab] = new_index
 		new_tab.titleChanged.connect(lambda new_title: self._refreshTabTitle(new_tab, new_title))
 
 	def _refreshTabTitle(self, tab, title):
-		tab_index = self._tabs[tab]
+		tab_index = self._tabbar.indexOf(tab)
 		self._tabbar.setTabText(tab_index, title)
+
+	def _closeTab(self, index):
+		self._tabbar.removeTab(index)
