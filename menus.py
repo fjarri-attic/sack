@@ -70,6 +70,8 @@ class MainMenu(QtGui.QMenuBar):
 
 class WindowMenu(MainMenu):
 
+	searchTabRequested = QtCore.pyqtSignal()
+
 	def __init__(self):
 		MainMenu.__init__(self)
 
@@ -78,8 +80,5 @@ class WindowMenu(MainMenu):
 
 		action_search = QtGui.QAction(self)
 		self.dynTr(action_search.setText).translate("MainMenu", "&Search")
-		action_search.triggered.connect(self._createSearchTab)
+		action_search.triggered.connect(self.searchTabRequested)
 		actions.addAction(action_search)
-
-	def _createSearchTab(self):
-		pass
