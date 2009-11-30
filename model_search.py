@@ -8,6 +8,9 @@ import parser
 
 class ResultsModel(QtCore.QAbstractListModel):
 
+	searchFinished = QtCore.pyqtSignal(list, float)
+	resultsFiltered = QtCore.pyqtSignal(list)
+
 	def __init__(self, parent, db_model):
 		QtCore.QAbstractListModel.__init__(self, parent)
 		self._results = []
@@ -25,8 +28,6 @@ class ResultsModel(QtCore.QAbstractListModel):
 		elif role == QtCore.Qt.DisplayRole:
 			return self._db_model.getTitle(self._filtered_results[index.row()])
 
-	searchFinished = QtCore.pyqtSignal(list, float)
-
 	def refreshResults(self, condition_str):
 		self._condition_str = condition_str
 		condition = parser.parseSearchCondition(condition_str)
@@ -37,9 +38,8 @@ class ResultsModel(QtCore.QAbstractListModel):
 		search_time = time.time() - time_start
 
 		self.reset()
-		self.searchFinished.emit(self._results, search_time)
 
-	resultsFiltered = QtCore.pyqtSignal(list)
+		self.searchFinished.emit(self._results, search_time)
 
 	def filterResults(self, tags):
 		self._filtered_results = []
@@ -60,6 +60,9 @@ class ResultsModel(QtCore.QAbstractListModel):
 
 
 class TagsListModel(QtCore.QAbstractListModel):
+
+	selectionChanged = QtCore.pyqtSignal(QtGui.QItemSelection, QtGui.QItemSelection)
+	filterChanged = QtCore.pyqtSignal(list)
 
 	def __init__(self, parent, db_model):
 		QtCore.QAbstractListModel.__init__(self, parent)
@@ -84,9 +87,6 @@ class TagsListModel(QtCore.QAbstractListModel):
 		self._objects = objects
 		self._tags = self._db_model.getTags(objects)
 		self.reset()
-
-	selectionChanged = QtCore.pyqtSignal(QtGui.QItemSelection, QtGui.QItemSelection)
-	filterChanged = QtCore.pyqtSignal(list)
 
 	def _processSelection(self, selected, unselected):
 		for index in selected.indexes():
