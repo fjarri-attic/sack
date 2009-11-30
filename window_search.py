@@ -18,6 +18,8 @@ class TagsListView(QtGui.QListView):
 	def __init__(self, model, parent=None):
 		QtGui.QListView.__init__(self, parent)
 		self.setModel(model)
+
+		# FIXME: initiate connection from model, not from view
 		self.selectionModel().selectionChanged.connect(model.selectionChanged)
 		self.setSelectionMode(QtGui.QAbstractItemView.MultiSelection)
 
