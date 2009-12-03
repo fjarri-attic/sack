@@ -6,6 +6,7 @@ from globals import *
 import menus
 import model_db
 import window_search
+import window_object
 
 
 @dynamically_translated
@@ -66,6 +67,12 @@ class DBWindow(QtGui.QMainWindow):
 
 	def _createSearchTab(self):
 		new_tab = window_search.SearchWindow(self, self._db_model)
+		new_index = self._tabbar.addTab(new_tab, new_tab.title())
+		new_tab.titleChanged.connect(lambda new_title: self._refreshTabTitle(new_tab, new_title))
+		new_tab.objectWindowRequested.connect(self._createObjectTab)
+
+	def _createObjectTab(self, obj_wrapper):
+		new_tab = window_object.ObjectWindow(self, self._db_model, obj_wrapper)
 		new_index = self._tabbar.addTab(new_tab, new_tab.title())
 		new_tab.titleChanged.connect(lambda new_title: self._refreshTabTitle(new_tab, new_title))
 

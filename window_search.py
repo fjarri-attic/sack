@@ -8,9 +8,15 @@ import model_search
 
 class SearchResultsView(QtGui.QListView):
 
+	doubleClickedOnObject = QtCore.pyqtSignal(ObjectIdWrapper)
+
 	def __init__(self, model, parent=None):
 		QtGui.QListView.__init__(self, parent)
 		self.setModel(model)
+		self.doubleClicked.connect(self._processDoubleClick)
+
+	def _processDoubleClick(self, index):
+		self.doubleClickedOnObject.emit(ObjectIdWrapper(self.model().objectId(index)))
 
 
 class TagsListView(QtGui.QListView):
@@ -110,6 +116,7 @@ class ResultsHeader(QtGui.QLabel):
 class SearchWindow(QtGui.QSplitter):
 
 	titleChanged = QtCore.pyqtSignal(str)
+	objectWindowRequested = QtCore.pyqtSignal(ObjectIdWrapper)
 
 	def __init__(self, parent, db_model):
 		QtGui.QSplitter.__init__(self, QtCore.Qt.Horizontal, parent)
@@ -136,6 +143,7 @@ class SearchWindow(QtGui.QSplitter):
 		self._results_header.titleChanged.connect(
 			lambda: self.titleChanged.emit(self.title()))
 		results_view = SearchResultsView(results_model)
+		results_view.doubleClickedOnObject.connect(self.objectWindowRequested)
 		results_layout = QtGui.QVBoxLayout()
 		results_layout.addWidget(self._results_header)
 		results_layout.addWidget(results_view)
