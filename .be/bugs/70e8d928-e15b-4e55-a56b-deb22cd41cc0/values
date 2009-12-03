@@ -1,0 +1,21 @@
+assigned: Bogdan Opanchuk <bg@bk.ru>
+
+
+creator: Bogdan Opanchuk <bg@bk.ru>
+
+
+reporter: Bogdan Opanchuk <bg@bk.ru>
+
+
+severity: minor
+
+
+status: open
+
+
+summary: 'DBWindow._refreshTabTitle(): uncomment tab bar name setter when Qt bug 6333
+  is resolved'
+
+
+time: Thu, 03 Dec 2009 09:21:21 +0000
+

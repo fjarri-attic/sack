@@ -70,8 +70,10 @@ class DBWindow(QtGui.QMainWindow):
 		new_tab.titleChanged.connect(lambda new_title: self._refreshTabTitle(new_tab, new_title))
 
 	def _refreshTabTitle(self, tab, title):
-		tab_index = self._tabbar.indexOf(tab)
-		self._tabbar.setTabText(tab_index, title)
+		# FIXME: uncomment when bug 6333 on Qt is resolved
+		#tab_index = self._tabbar.indexOf(tab)
+		#self._tabbar.setTabText(tab_index, title)
+		pass
 
 	def _closeTab(self, index):
 		self._tabbar.removeTab(index)
