@@ -7,6 +7,17 @@ from logging import warning
 from PyQt4 import QtGui, QtCore
 
 
+class ObjectIdWrapper:
+	"""
+	Wrapper class for object ID. It can depend on DB engine type,
+	but signals need specific class for initialization. So we have to
+	pass object ids wrapped in this class
+	"""
+
+	def __init__(self, id):
+		self.id = id
+
+
 class _GlobalsWrapper:
 	"""
 	Wrapper for some global variables and functions.
