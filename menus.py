@@ -80,5 +80,6 @@ class WindowMenu(MainMenu):
 
 		action_search = QtGui.QAction(self)
 		self.dynTr(action_search.setText).translate("MainMenu", "&Search")
+		action_search.setShortcut(hotkeys.SEARCH)
 		action_search.triggered.connect(self.searchTabRequested)
 		actions.addAction(action_search)
