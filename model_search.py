@@ -20,13 +20,16 @@ class ResultsModel(QtCore.QAbstractListModel):
 	def rowCount(self, parent):
 		return len(self._filtered_results)
 
+	def objectId(self, index):
+		return self._filtered_results[index.row()]
+
 	def data(self, index, role=QtCore.Qt.DisplayRole):
 		if not index.isValid():
 			return None
 		elif index.row() < 0 or index.row() >= len(self._filtered_results):
 			return None
 		elif role == QtCore.Qt.DisplayRole:
-			return self._db_model.getTitle(self._filtered_results[index.row()])
+			return self._db_model.getTitle(self.objectId(index))
 
 	def refreshResults(self, condition_str):
 		self._condition_str = condition_str
