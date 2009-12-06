@@ -130,7 +130,9 @@ class SearchWindow(QtGui.QSplitter):
 		tags_header = QtGui.QLabel()
 		self.dynTr(tags_header.setText).translate('SearchWindow', 'Tags')
 		tags_view = TagsListView(tags_model)
+
 		tags_layout = QtGui.QVBoxLayout()
+		tags_layout.setContentsMargins(1, 1, 1, 1)
 		tags_layout.addWidget(tags_header)
 		tags_layout.addWidget(tags_view)
 		tags_widget.setLayout(tags_layout)
@@ -144,7 +146,9 @@ class SearchWindow(QtGui.QSplitter):
 			lambda: self.titleChanged.emit(self.title()))
 		results_view = SearchResultsView(results_model)
 		results_view.doubleClickedOnObject.connect(self.objectWindowRequested)
+
 		results_layout = QtGui.QVBoxLayout()
+		results_layout.setContentsMargins(1, 1, 1, 1)
 		results_layout.addWidget(self._results_header)
 		results_layout.addWidget(results_view)
 		results_widget.setLayout(results_layout)
@@ -155,7 +159,9 @@ class SearchWindow(QtGui.QSplitter):
 		condition_edit.searchRequested.connect(results_model.refreshResults)
 		search_button = QtGui.QPushButton(">>")
 		search_button.clicked.connect(condition_edit.onButtonClick)
+
 		edit_layout = QtGui.QHBoxLayout()
+		edit_layout.setContentsMargins(1, 1, 1, 1)
 		edit_layout.addWidget(condition_edit)
 		edit_layout.addWidget(search_button)
 		edit_widget.setLayout(edit_layout)
