@@ -157,7 +157,8 @@ class SearchWindow(QtGui.QSplitter):
 		edit_widget = QtGui.QWidget(self)
 		condition_edit = SearchConditionEdit()
 		condition_edit.searchRequested.connect(results_model.refreshResults)
-		search_button = QtGui.QPushButton(">>")
+		search_button = QtGui.QToolButton()
+		search_button.setText(">>")
 		search_button.clicked.connect(condition_edit.onButtonClick)
 
 		edit_layout = QtGui.QHBoxLayout()
