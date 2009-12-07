@@ -1,0 +1,20 @@
+assigned: Bogdan Opanchuk <bg@bk.ru>
+
+
+creator: Bogdan Opanchuk <bg@bk.ru>
+
+
+reporter: Bogdan Opanchuk <bg@bk.ru>
+
+
+severity: minor
+
+
+status: open
+
+
+summary: Check search condition syntax while typing; do not allow empty condition
+
+
+time: Mon, 07 Dec 2009 12:10:25 +0000
+
