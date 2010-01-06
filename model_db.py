@@ -94,9 +94,9 @@ class DatabaseModel(QtCore.QObject):
 					repr(result) + "), using the first one")
 			self._root = result[0]
 
-			self._class_class = self._db.read(self._root, ['builtinClasses', 'class'])
-			self._tag_class = self._db.read(self._root, ['builtinClasses', 'tag'])
-			self._default_class = self._db.read(self._root, ['builtinClasses', 'default'])
+			self._class_class = self._db.read(self._root, ['builtin_classes', 'class'])
+			self._tag_class = self._db.read(self._root, ['builtin_classes', 'tag'])
+			self._default_class = self._db.read(self._root, ['builtin_classes', 'default'])
 
 	def getClass(self, id):
 		return self._db.read(id, ['_class'])
