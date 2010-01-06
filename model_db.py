@@ -98,8 +98,11 @@ class DatabaseModel(QtCore.QObject):
 			self._tag_class = self._db.read(self._root, ['builtinClasses', 'tag'])
 			self._default_class = self._db.read(self._root, ['builtinClasses', 'default'])
 
+	def getClass(self, id):
+		return self._db.read(id, ['_class'])
+
 	def getTitle(self, id):
-		obj_class = self._db.read(id, ['_class'])
+		obj_class = self.getClass(id)
 		title_template = self._db.read(obj_class, ['title_template'])
 		template_obj = parser.TitleTemplate(title_template)
 
