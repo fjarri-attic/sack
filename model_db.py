@@ -126,5 +126,12 @@ class DatabaseModel(QtCore.QObject):
 				tags_set.add(tag)
 		return list(tags_set)
 
+	def getFieldsOrder(self, id, path):
+		if len(path) == 0:
+			return []
+		else:
+			obj_class = self.getClass(id)
+			return self._db.read(obj_class, 'fields_order')
+
 	def __getattr__(self, name):
 		return getattr(self._db, name)
