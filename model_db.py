@@ -29,7 +29,7 @@ class DatabaseModel(QtCore.QObject):
 		coworkers = self.createTag('Coworkers')
 		enemies = self.createTag('Enemies')
 
-		human = self.createClass('Human', template='${name}', fields=['name', 'age'])
+		human = self.createClass('Human', template='${name}', fields={'_order': ['name', 'age']})
 
 		self.createObject({'name': 'Alex', 'age': 20}, tags=[friends], cls=human)
 		self.createObject({'name': 'Bob', 'age': 22}, tags=[coworkers, friends], cls=human)
@@ -54,7 +54,7 @@ class DatabaseModel(QtCore.QObject):
 		self._default_class = None # stub for createObject()
 		self._class_class = None # stub for createClass()
 		self._class_class = self.createClass('Metaclass',
-			fields=['name', 'title_template', 'fields_order'])
+			fields={'_order': ['name', 'title_template', 'fields_order']})
 		self.setClass(self._class_class, self._class_class)
 
 	def setClass(self, obj, cls):
@@ -77,7 +77,7 @@ class DatabaseModel(QtCore.QObject):
 			self._createMetaclass()
 			self._tag_class = self.createClass('Tag class', fields=['name', 'description'])
 			self._default_class = self.createClass('Default class',
-				template='${title}', fields=['title', 'data'])
+				template='${title}', fields={'_order': ['title', 'data']})
 
 			self._root = self.createObject({
 				'builtin_classes': {
@@ -127,11 +127,8 @@ class DatabaseModel(QtCore.QObject):
 		return list(tags_set)
 
 	def getFieldsOrder(self, id, path):
-		if len(path) == 0:
-			return []
-		else:
-			obj_class = self.getClass(id)
-			return self._db.read(obj_class, 'fields_order')
+		obj_class = self.getClass(id)
+		return self._db.read(obj_class, ['fields_order'] + path + ['_order'])
 
 	def __getattr__(self, name):
 		return getattr(self._db, name)
