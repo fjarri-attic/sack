@@ -37,23 +37,24 @@ class TreeItem(object):
 			return 0
 
 
-def dataToItems(data, name):
+def dataToItems(db_model, data, name):
 	if isinstance(data, dict):
 		root = TreeItem(name)
-		for key in data:
-			child = dataToItems(data[key], key)
+		for key in sorted(data):
+			child = dataToItems(db_model, data[key], key)
 			child.parent = root
 			root.appendChild(child)
 		return root
 	elif isinstance(data, list):
 		root = TreeItem(name)
 		for index in range(len(data)):
-			child = dataToItems(data[index], index)
+			child = dataToItems(db_model, data[index], index)
 			child.parent = root
 			root.appendChild(child)
 		return root
 	else:
 		return TreeItem(name, value=data)
+
 
 class ObjectModel(QtCore.QAbstractItemModel):
 
