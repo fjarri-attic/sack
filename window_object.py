@@ -48,7 +48,7 @@ def dataToItems(db_model, data, name):
 	elif isinstance(data, list):
 		root = TreeItem(name)
 		for index in range(len(data)):
-			child = dataToItems(db_model, data[index], index)
+			child = dataToItems(db_model, data[index], '*')
 			child.parent = root
 			root.appendChild(child)
 		return root
