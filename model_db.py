@@ -29,10 +29,18 @@ class DatabaseModel(QtCore.QObject):
 		coworkers = self.createTag('Coworkers')
 		enemies = self.createTag('Enemies')
 
-		human = self.createClass('Human', template='${name}', fields={'_order': ['name', 'age']})
+		human = self.createClass('Human', template='${name}',
+			fields={
+				'_order': ['name', 'age', 'friends'],
+				'friends': {'_list': {'_order': ['name', 'age']}}
+			})
 
 		self.createObject({'name': 'Alex', 'age': 20}, tags=[friends], cls=human)
-		self.createObject({'name': 'Bob', 'age': 22}, tags=[coworkers, friends], cls=human)
+		self.createObject({'name': 'Bob', 'age': 22, 'eyes': 'blue',
+			'friends': [
+				{'name': 'Alex', 'age': 20, 'eyes': 'gray'},
+				{'name': 'Carl', 'age': 23}
+			]}, tags=[coworkers, friends], cls=human)
 		self.createObject({'name': 'Carl'}, tags=[enemies], cls=human)
 		self.createObject({'name': 'Dick', 'age': 23}, tags=[coworkers, enemies], cls=human)
 
@@ -128,7 +136,8 @@ class DatabaseModel(QtCore.QObject):
 
 	def getFieldsOrder(self, id, path):
 		obj_class = self.getClass(id)
-		return self._db.read(obj_class, ['fields_order'] + path + ['_order'])
+		return self._db.read(obj_class, ['fields_order'] +
+			[x if isinstance(x, str) and x != '' else '_list' for x in path] + ['_order'])
 
 	def __getattr__(self, name):
 		return getattr(self._db, name)
