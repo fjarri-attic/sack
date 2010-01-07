@@ -62,8 +62,8 @@ class ObjectModel(QtCore.QAbstractItemModel):
 		self._db_model = db_model
 		self._obj_id = obj_id
 
-		tree = {'key1': 1, 'key2': 2, 'key3': ['val1', 'val2', {'subkey': 'val'}]}
-		self._tree = dataToItems(tree, None)
+		tree = self._db_model.read(self._obj_id)
+		self._tree = dataToItems(self._db_model, tree, None)
 
 	def columnCount(self, parent):
 		if parent.isValid():
