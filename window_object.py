@@ -37,18 +37,32 @@ class TreeItem(object):
 			return 0
 
 
-def dataToItems(db_model, data, name):
+def dataToItems(db_model, id, path, data, name):
 	if isinstance(data, dict):
 		root = TreeItem(name)
-		for key in sorted(data):
-			child = dataToItems(db_model, data[key], key)
+
+		fields = list(sorted(data))
+		sorted_fields = []
+
+		known_fields = db_model.getFieldsOrder(id, path)
+		for elem in known_fields:
+			if elem in fields:
+				sorted_fields.append(elem)
+				fields.remove(elem)
+
+		for elem in fields:
+			if not elem.startswith('_'):
+				sorted_fields.append(elem)
+
+		for key in sorted_fields:
+			child = dataToItems(db_model, id, path + [key], data[key], key)
 			child.parent = root
 			root.appendChild(child)
 		return root
 	elif isinstance(data, list):
 		root = TreeItem(name)
 		for index in range(len(data)):
-			child = dataToItems(db_model, data[index], '*')
+			child = dataToItems(db_model, id, path + [''], data[index], '*')
 			child.parent = root
 			root.appendChild(child)
 		return root
@@ -64,7 +78,7 @@ class ObjectModel(QtCore.QAbstractItemModel):
 		self._obj_id = obj_id
 
 		tree = self._db_model.read(self._obj_id)
-		self._tree = dataToItems(self._db_model, tree, None)
+		self._tree = dataToItems(self._db_model, self._obj_id, [], tree, None)
 
 	def columnCount(self, parent):
 		if parent.isValid():
