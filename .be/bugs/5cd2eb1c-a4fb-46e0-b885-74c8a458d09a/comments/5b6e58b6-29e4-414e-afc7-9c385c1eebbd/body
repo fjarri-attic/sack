@@ -1,0 +1,1 @@
+Currently one can get values of underscored (hidden) fields by using them in title template. This case should be handled properly - probably, ignore and write a warning to log.
