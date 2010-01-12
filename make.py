@@ -1,14 +1,18 @@
-import os.path
-from subprocess import Popen
+import os
 
-os.chdir(os.path.abspath(os.path.dirname(__file__)))
+import qthelpers
 
-def execute(cmd):
-	result = Popen(cmd).wait()
-	if result != 0:
-		raise Exception("Error: " + str(result))
+APP_NAME = "Sack"
+ORGANIZATION_NAME = "Manti"
+SOURCES = [
+	'application.py',
+	'menus.py',
+	'preferences.py',
+	'window_db.py',
+	'window_object.py',
+	'window_search.py'
+]
 
-execute(["/Library/Frameworks/Python.framework/Versions/3.1/bin/pylupdate4", "sack.pro"])
-execute(["lrelease", "sack.pro"])
-execute(["/Library/Frameworks/Python.framework/Versions/3.1/bin/pyrcc4",
-	"sack.qrc", "-o", "sack_qrc.py", "-py3"])
+if __name__ == "__main__":
+	prj = qthelpers.QtProject(os.path.abspath(os.path.dirname(__file__)), sources=SOURCES)
+	prj.build()

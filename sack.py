@@ -1,9 +1,8 @@
 import sys
-
+import qthelpers
 import application
-import loghelpers
-import sack_qrc
 
-loghelpers.init()
+qthelpers.log.init()
+qthelpers.importResources()
 app = application.Application(sys.argv)
 sys.exit(app.exec_())
