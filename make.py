@@ -14,5 +14,6 @@ SOURCES = [
 ]
 
 if __name__ == "__main__":
-	prj = qthelpers.QtProject(os.path.abspath(os.path.dirname(__file__)), sources=SOURCES)
+	prj = qthelpers.QtProject(os.path.abspath(os.path.dirname(__file__)),
+		sources=SOURCES, default_locale='en_US')
 	prj.build()
