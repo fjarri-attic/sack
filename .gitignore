@@ -8,4 +8,5 @@
 *.qrc
 *.project
 *.pydevproject
+translation.ts
 
