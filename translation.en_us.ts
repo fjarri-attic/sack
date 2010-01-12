@@ -72,24 +72,19 @@
 <context>
     <name>Preferences</name>
     <message>
-        <location filename="preferences.py" line="17"/>
+        <location filename="preferences.py" line="19"/>
         <source>Preferences</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="preferences.py" line="49"/>
+        <location filename="preferences.py" line="26"/>
         <source>Current locale</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="preferences.py" line="22"/>
+        <location filename="preferences.py" line="24"/>
         <source>Language</source>
         <translation></translation>
-    </message>
-    <message>
-        <location filename="preferences.py" line="50"/>
-        <source>Default translation</source>
-        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
